@@ -83,7 +83,7 @@ module.exports.updateRecordHttpInterpret = v(({apiConfig, act}) =>
     },
     // We process all responses in the same place for now,
     // so use a catch-all category name
-    category: 'all',
+    category: 'all'
   })
 , [
   ['arg1', PropTypes.shape({

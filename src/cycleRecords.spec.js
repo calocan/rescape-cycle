@@ -73,7 +73,7 @@ describe('cycleRecords', () => {
         ACTION: {'-a---c----|': testSources.ACTION},
         HTTP: {'---g---h--|': testSources.HTTP},
         ACTION_CONFIG: {'a|': testSources.ACTION_CONFIG},
-        CONFIG: {'a|': testSources.CONFIG},
+        CONFIG: {'a|': testSources.CONFIG}
       }, {
         HTTP: {'-r---s----|': sinks.HTTP},
         ACTION: {'---m---n--|': sinks.ACTION}

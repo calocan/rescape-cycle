@@ -95,8 +95,8 @@ module.exports.fetchRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
  * @returns {Stream} Intent of record update, which is a mapping to an updateAction stream,
  * which configures the update for the intended params
  */
-module.exports.updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
-    return actionFilter({ACTION_CONFIG, ACTION}, [
+module.exports.updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
+    actionFilter({ACTION_CONFIG, ACTION}, [
       R.propSatisfies(verb => R.contains(verb, R.keys(PATCH_VERBS)), 'verb'),
       R.propEq('phase', REQUEST)
     ])
@@ -110,9 +110,8 @@ module.exports.updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
         type: action.type,
         // Pass all action keys except for type
         value: R.omit(['type'], action)
-      }));
+      }))
       // .debug(act => console.log(`Update records intent ${prettyFormat(act)}`))
-  }
 , [
   ['arg1', PropTypes.shape({
     ACTION_CONFIG: PropTypes.instanceOf(Stream).isRequired,

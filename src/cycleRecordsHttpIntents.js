@@ -32,7 +32,7 @@ const PropTypes = require('prop-types');
 module.exports.successFailureHttpIntent = v(({ACTION_CONFIG, HTTP}) => {
   const response$ = HTTP.select('all').flatten();
   return xs.combine(response$, ACTION_CONFIG).map(([response, actionConfigs]) => {
-    return intent(response, actionConfigs)
+    return intent(response, actionConfigs);
   });
   // .debug(actionBody => console.log(`Success/Failure act with action body ${prettyPrint(actionBody)}`));
 }, [
@@ -79,3 +79,4 @@ const intent = v((response, actionConfigs) => {
     configByType: PropTypes.object.isRequired
   }).isRequired]
 ], 'intent');
+
