@@ -10,7 +10,7 @@
  */
 const R = require('ramda');
 const {mapDefault} = require('rescape-ramda');
-const {xs} = mapDefault('xs', require('xstream'));
+const {xsm} = mapDefault('xs', require('xstream'));
 const {apiUri} = require('helpers/configHelpers');
 const {v} = require('rescape-validate');
 const PropTypes = require('prop-types');
@@ -83,7 +83,7 @@ module.exports.updateRecordHttpInterpret = v(({apiConfig, act}) =>
     },
     // We process all responses in the same place for now,
     // so use a catch-all category name
-    category: 'all'
+    category: 'all',
   })
 , [
   ['arg1', PropTypes.shape({

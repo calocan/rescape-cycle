@@ -63,6 +63,7 @@ const addCitiesRequestBody = module.exports.addCitiesRequestBody = {
 
 // HTTP Driver Responses. including the request since that is what the Cycle.js HTTP driver does
 module.exports.addCitiesResponseSuccess = {
+  status: 200,
   request: addCitiesRequestBody,
   data: cities
 };

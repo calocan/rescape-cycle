@@ -69,18 +69,6 @@ describe('cycleRecords', () => {
     };
 
     // Override the source drivers with our fake sources
-    assertSourcesSinks({
-      ACTION: { 'c-|': testSources.ACTION },
-      HTTP: { '--|': testSources.HTTP },
-      ACTION_CONFIG: { 'a|': testSources.ACTION_CONFIG },
-      CONFIG: { 'a|': testSources.CONFIG }
-    }, {
-      HTTP: { 's-|': sinks.HTTP },
-      ACTION: { '--|': sinks.ACTION }
-    }, cycleRecords, done, { interval: 200 });
-
-    // Override the source drivers with our fake sources
-    /*
       assertSourcesSinks({
         ACTION: {'-a---c----|': testSources.ACTION},
         HTTP: {'---g---h--|': testSources.HTTP},
@@ -90,6 +78,5 @@ describe('cycleRecords', () => {
         HTTP: {'-r---s----|': sinks.HTTP},
         ACTION: {'---m---n--|': sinks.ACTION}
       }, cycleRecords, done, {interval: 200});
-    */
   });
 });
