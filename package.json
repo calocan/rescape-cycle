@@ -1,24 +1,59 @@
 {
-  "name": "cycle-rescape",
-  "version": "0.1.0",
-  "private": true,
-  "devDependencies": {
-    "cycle-scripts": "1.1.0"
-  },
-  "dependencies": {
-    "@cycle/dom": "^17.4.0",
-    "@cycle/run": "^3.1.0",
-    "xstream": "^10.8.0"
-  },
+  "name": "rescape-cycle",
+  "version": "1.2.2",
+  "description": "Ramda validation utilities for the Rescape platform",
+  "homepage": "https://www.rescapes.net/",
+  "main": "dist/index.js",
+  "files": [
+    "index.js",
+    "src",
+    "dist"
+  ],
   "scripts": {
-    "start": "cycle-scripts start",
-    "test": "cycle-scripts test",
-    "build": "cycle-scripts build",
-    "eject": "cycle-scripts eject"
+    "test": "NODE_PATH='.:src' BABEL_ENV=test jest",
+    "test:coverage": "NODE_PATH='src' jest --coverage",
+    "lint": "eslint src example test",
+    "clean": "rm -fr dist/*",
+    "build": "npm run clean && npm run lint && npm run build-es5",
+    "build-es5": "mkdir -p dist && babel src --out-dir dist --ignore spec.js --plugins=transform-es2015-modules-commonjs --source-maps inline",
+    "build-publish-patch": "npm run build && npm run test && npm version patch && npm publish",
+    "build-publish-minor": "npm run build && npm run test && npm version minor && npm publish"
   },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
+  "jest": {
+    "modulePaths": [
+      "<rootDir>/source"
+    ],
+    "testPathIgnorePatterns": [
+      "__snapshots__"
+    ],
+    "bail": true
+  },
+  "repository": "git@github.com:calocan/rescape-cycle.git",
+  "author": "Andy Likuski",
+  "license": "MIT",
+  "dependencies": {
+    "@cycle/http": "^14.2.0",
+    "babel-preset-env": "^1.6.0",
+    "data.maybe": "^1.2.2",
+    "pretty-format": "^20.0.3",
+    "prop-types": "^15.5.10",
+    "ramda": "^0.24.1",
+    "ramda-fantasy": "^0.8.0",
+    "ramda-fantasy-validation": "^0.2.0",
+    "redux-cycles": "^0.4.1",
+    "rescape-ramda": "^1.1.0",
+    "rescape-validate": "^1.2.2",
+    "xstream": "^10.9.0"
+  },
+  "devDependencies": {
+    "@cycle/time": "^0.8.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "6.25.0",
+    "babel-loader": "7.1.1",
+    "eslint": "^4.6.1",
+    "eslint-plugin-jest": "^21.0.0",
+    "jest": "^20.0.4",
+    "jsdom": "^11.1.0",
+    "webpack": "^3.5.4"
   }
 }
