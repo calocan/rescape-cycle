@@ -12,7 +12,8 @@
 const R = require('ramda');
 
 module.exports = R.mergeAll([
-  require('./functionValidator'),
-  require('./scopeValidator'),
-  require('./propTypesValidator')
+  require('./cycleRecords'),
+  require('helpers/actionHelpers'),
+  require('helpers/actionCreatorHelpers'),
+  require('helpers/cycleActionHelpers')
 ]);
