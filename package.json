@@ -41,7 +41,7 @@
     "ramda-fantasy": "^0.8.0",
     "ramda-fantasy-validation": "^0.2.0",
     "redux-cycles": "^0.4.1",
-    "rescape-ramda": "^1.1.0",
+    "rescape-ramda": "^1.2.0",
     "rescape-validate": "^1.2.2",
     "xstream": "^10.9.0"
   },
