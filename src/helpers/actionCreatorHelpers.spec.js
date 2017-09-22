@@ -163,7 +163,7 @@ describe('actionHelpers', () => {
   });
 
   test('actionConfig', () => {
-    expect(actionConfig('sample', 'foo', VERBS.FETCH, ['user'])).toEqual(
+    expect(actionConfig('sample', ['user'], 'foo', VERBS.FETCH)).toEqual(
       {root: 'sample', model: 'foo', verb: VERBS.FETCH, scope: ['user'], ret: ACTION_BODIES[VERBS.FETCH]}
     );
   });

@@ -283,18 +283,18 @@ const ACTION_BODIES = module.exports.ACTION_BODIES = R.map(R.always(DEFAULT_ACTI
 /**
  * Creates a action config object
  * @param {String} root. The parent concept of the model, such as 'location' for model 'CITY'
+ * @param {Array} scope. Array of keys representing keys of the scope object that
  * @param {String} model. The concept being modeled
  * @param {String} verb. One of VERBS.FETCH, VERBS.ADD, VERBS.REMOVE, etc.
- * @param {Array} scope. Array of keys representing keys of the scope object that
  * will be merged into each object passed to the action. These are just the keys.
  * The current scope object will be passed to the actionCreator before the action
  * is called
  */
-const actionConfig = module.exports.actionConfig = v((root, model, verb, scope) =>
+const actionConfig = module.exports.actionConfig = v((root, scope, model, verb) =>
     ({root, model, verb, scope, ret: ACTION_BODIES[verb]})
   , [
     ['root', PropTypes.string.isRequired],
+    ['scope', PropTypes.arrayOf(PropTypes.string).isRequired],
     ['model', PropTypes.string.isRequired],
-    ['verb', PropTypes.string.isRequired],
-    ['scope', PropTypes.arrayOf(PropTypes.string).isRequired]
+    ['verb', PropTypes.string.isRequired]
   ], 'actionConfig');

@@ -17,7 +17,7 @@ const R = require('ramda');
 const {REPLACE, FETCH, ADD, REMOVE} = VERBS;
 const {overrideSources, overrideSourcesWithoutStreaming} = require('helpers/cycleActionHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
-const {scopeActionCreators, ACTION_BODIES, actionConfig} = require('helpers/actionCreatorHelpers');
+const {scopeActionCreators, actionConfig} = require('helpers/actionCreatorHelpers');
 const {config} = require('test/testConfig');
 
 // Sample action root, representing a module full of related actions
@@ -37,15 +37,17 @@ const M = module.exports.MODELS = R.mapObjIndexed((v, k) => R.toLower(k), {
 const scope = ['user'];
 const projectScope = R.concat(scope, ['project']);
 const rootedConfig = actionConfig(ACTION_ROOT);
+const userConfig = rootedConfig(scope);
+const projectConfig = rootedConfig(projectScope);
 const ACTION_CONFIGS = module.exports.ACTION_CONFIGS = [
-  rootedConfig(M.BLOCKNAMES, FETCH, scope),
-  rootedConfig(M.CITIES, FETCH, scope),
-  rootedConfig(M.CITIES, ADD, scope),
-  rootedConfig(M.DATAPOINTS, FETCH, scope),
-  rootedConfig(M.DATAPOINT_PROFILES, FETCH, scope),
-  rootedConfig(M.PROJECT_PROFILES, FETCH, projectScope),
-  rootedConfig(M.PROJECT_LOCATIONS, ADD, projectScope),
-  rootedConfig(M.PROJECT_LOCATIONS, REMOVE, projectScope)
+  userConfig(M.BLOCKNAMES, FETCH),
+  userConfig(M.CITIES, FETCH),
+  userConfig(M.CITIES, ADD),
+  userConfig(M.DATAPOINTS, FETCH),
+  userConfig(M.DATAPOINT_PROFILES, FETCH),
+  projectConfig(M.PROJECT_PROFILES, FETCH),
+  projectConfig(M.PROJECT_LOCATIONS, ADD),
+  projectConfig(M.PROJECT_LOCATIONS, REMOVE)
 ];
 
 /**
