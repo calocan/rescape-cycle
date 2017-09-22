@@ -296,5 +296,5 @@ const actionConfig = module.exports.actionConfig = v((root, model, verb, scope) 
     ['root', PropTypes.string.isRequired],
     ['model', PropTypes.string.isRequired],
     ['verb', PropTypes.string.isRequired],
-    ['scope', PropTypes.arrayOf(PropTypes.string).isRequired],
+    ['scope', PropTypes.arrayOf(PropTypes.string).isRequired]
   ], 'actionConfig');

@@ -164,7 +164,7 @@ describe('actionHelpers', () => {
 
   test('actionConfig', () => {
     expect(actionConfig('sample', 'foo', VERBS.FETCH, ['user'])).toEqual(
-      {root: 'sample', model: 'foo', verb: VERBS.FETCH, scope:['user'], ret: ACTION_BODIES[VERBS.FETCH]}
+      {root: 'sample', model: 'foo', verb: VERBS.FETCH, scope: ['user'], ret: ACTION_BODIES[VERBS.FETCH]}
     );
   });
 });

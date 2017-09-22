@@ -109,4 +109,3 @@ module.exports.actionConfigs = R.fromPairs(R.map(actionKey => [actionKey, action
  */
 module.exports.actions = scopeActionCreators(ACTION_CONFIGS, scopeValues);
 
-
