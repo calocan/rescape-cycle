@@ -12,6 +12,7 @@
 const R = require('ramda');
 const {actionType, actionKey, PHASES, VERBS} = require('./actionHelpers');
 const {v, vMergeScope} = require('rescape-validate');
+const PropTypes = require('prop-types');
 
 /**
  * Makes a simple synchronous actionCreator that accepts a single obj and returns an obj
@@ -28,8 +29,9 @@ const {v, vMergeScope} = require('rescape-validate');
  * [{user: 1, project: 2, name: 'Scenario A'}, {user:1, project: 2, name: 'Scenario B'}.
  * Scope is automatically merged with obj if ret is not a function. If ret is a function,
  * scope is the first argument
- * @param {Object} obj The unary argument to the action creator sent by the
- * action sender (e.g. a Component)
+ * @param {Object|Array} obj The unary argument to the action creator sent by the
+ * action sender (e.g. a Component). This must be a functor, whether object or array. This matches
+ * up a bit with the graphql syntax of using keys to make fragments or aliases.
  * @returns {Object} ret or {[ret as string]: obj} along with the type
  * creator:: s -> [<k,v] -> <k,v> -> {type: s, ...<k,v>}
  */
@@ -47,10 +49,10 @@ const creator = module.exports.creator = v(R.curry((type, ret, scope, obj) =>
     ])(ret)
   )
 ), [
-  ['type', [String]],
-  ['ret', [Object, String, Function]],
-  ['scope', [Object]],
-  ['obj', [Object]]
+  ['type', PropTypes.string.isRequired],
+  ['ret', PropTypes.oneOfType([PropTypes.shape(), PropTypes.string, PropTypes.func]).isRequired],
+  ['scope', PropTypes.shape().isRequired],
+  ['obj', PropTypes.oneOfType([PropTypes.shape(), PropTypes.array]).isRequired]
 ], 'creator');
 
 /**
@@ -103,18 +105,18 @@ const asyncActionCreators = module.exports.asyncActionCreators = v(R.curry((acti
     [keyMaker(FAILURE)]: R.curry((scope, obj) => creator(typeMaker(FAILURE), rets[FAILURE] || R.merge, scope, obj))
   };
 }), [
-  ['actionRoot', [String]],
-  ['model', [String]],
-  ['verb', [String]],
-  ['rets', [Object]]
+  ['actionRoot', PropTypes.string.isRequired],
+  ['model', PropTypes.string.isRequired],
+  ['verb', PropTypes.string.isRequired],
+  ['rets', PropTypes.shape().isRequired]
 ], 'asyncActionCreators');
 
 /**
  * Creates actions for a given scope based on the configuration.
  * Each configured item in actionConfigs results in three actionCreators, one for initiating an async call,
  * one for success, and one for failure This could in the future be changed to accommodate open streams, retries, etc
- * @param {[Object]} actionConfig Configuration of available actions
- * @param {[String]} actionConfig.scope A list of keys to be matched with the passed in scope. For instance,
+ * @param {PropTypes.shape().isRequired} actionConfig Configuration of available actions
+ * @param {PropTypes.string.isRequired} actionConfig.scope A list of keys to be matched with the passed in scope. For instance,
  * if this is ['user', 'project'] and the passed in scope is {user, project, location}, then {user, project} will be
  * added passed to the configured actionCreators in addition to whatever is eventually sent to the action from a
  * Component
@@ -166,8 +168,8 @@ const makeActionCreators = module.exports.makeActionCreators = v(R.curry((action
     )
   )
 ), [
-  ['actionConfigs', [Array]],
-  ['scope', [Object]]
+  ['actionConfigs', PropTypes.array.isRequired],
+  ['scope', PropTypes.shape().isRequired]
 ], 'makeActionCreators');
 
 // Like makeActionCreators but for a single actionConfig
@@ -180,13 +182,13 @@ const makeActionCreatorsForConfig = module.exports.makeActionCreatorsForConfig =
     asyncActionCreators(actionConfig.root, actionConfig.model, actionConfig.verb, actionConfig.ret)
   )
 ), [
-  ['actionConfig', [Object]],
-  ['scope', [Object]]
+  ['actionConfig', PropTypes.shape().isRequired],
+  ['scope', PropTypes.shape().isRequired]
 ], 'makeActionCreatorsForConfig');
 
 /**
  * Returns the actionCreators with the given scope values
- * @param {Object} actionConfigs as described in makeActionCreators
+ * @param {Array} actionConfigs as described in makeActionCreators
  * @param {Object} scope Scope values based on the current
  * state of the application.
  * @returns {Object} Action creators keyed by a friendly name
@@ -195,8 +197,8 @@ module.exports.scopeActionCreators = v((actionConfigs, scope) => makeActionCreat
   actionConfigs,
   scope
 ), [
-  ['actionConfigs', [Array]],
-  ['scope', [Object]]
+  ['actionConfigs', PropTypes.array.isRequired],
+  ['scope', PropTypes.shape().isRequired]
 ], 'scopeActionCreators');
 
 /**
@@ -207,8 +209,8 @@ module.exports.scopeActionCreators = v((actionConfigs, scope) => makeActionCreat
 module.exports.actionCreatorNameForPhase = v((actionConfig, phase) =>
   actionKey(actionConfig.model, actionConfig.verb, phase)
 , [
-  ['actionConfig', [Object]],
-  ['phase', [String]]
+  ['actionConfig', PropTypes.shape().isRequired],
+  ['phase', PropTypes.string.isRequired]
 ], 'actionCreatorNameForPhase');
 
 /**
@@ -238,8 +240,8 @@ const DEFAULT_ACTION_BODIES = {
         functor)
     ),
     [
-      ['scope', [Object]],
-      ['functor', [Array, Object]]
+      ['scope', PropTypes.shape().isRequired],
+      ['functor', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
     ], 'DEFAULT_ACTION_BODIES.REQUEST'),
 
   /**
@@ -255,8 +257,8 @@ const DEFAULT_ACTION_BODIES = {
       response
     ),
     [
-      ['scope', [Object]],
-      ['response', [Object]]
+      ['scope', PropTypes.shape().isRequired],
+      ['response', PropTypes.shape().isRequired]
     ], 'DEFAULT_ACTION_BODIES.SUCCESS'),
 
   /**
@@ -270,10 +272,29 @@ const DEFAULT_ACTION_BODIES = {
       response
     ),
     [
-      ['scope', [Object]],
-      ['response', [Object]]
+      ['scope', PropTypes.shape().isRequired],
+      ['response', PropTypes.shape().isRequired]
     ], 'DEFAULT_ACTION_BODIES.FAILURE')
 };
 
 // By default have all actionCreators return action bodies made by these functions
-module.exports.ACTION_BODIES = R.map(R.always(DEFAULT_ACTION_BODIES), VERBS);
+const ACTION_BODIES = module.exports.ACTION_BODIES = R.map(R.always(DEFAULT_ACTION_BODIES), VERBS);
+
+/**
+ * Creates a action config object
+ * @param {String} root. The parent concept of the model, such as 'location' for model 'CITY'
+ * @param {String} model. The concept being modeled
+ * @param {String} verb. One of VERBS.FETCH, VERBS.ADD, VERBS.REMOVE, etc.
+ * @param {Array} scope. Array of keys representing keys of the scope object that
+ * will be merged into each object passed to the action. These are just the keys.
+ * The current scope object will be passed to the actionCreator before the action
+ * is called
+ */
+const actionConfig = module.exports.actionConfig = v((root, model, verb, scope) =>
+    ({root, model, verb, scope, ret: ACTION_BODIES[verb]})
+  , [
+    ['root', PropTypes.string.isRequired],
+    ['model', PropTypes.string.isRequired],
+    ['verb', PropTypes.string.isRequired],
+    ['scope', PropTypes.arrayOf(PropTypes.string).isRequired],
+  ], 'actionConfig');

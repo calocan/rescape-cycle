@@ -17,16 +17,15 @@ const R = require('ramda');
 const {REPLACE, FETCH, ADD, REMOVE} = VERBS;
 const {overrideSources, overrideSourcesWithoutStreaming} = require('helpers/cycleActionHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
-const {scopeActionCreators, ACTION_BODIES} = require('helpers/actionCreatorHelpers');
-const {testConfig} = require('test/testConfig');
-const {v} = rquire
+const {scopeActionCreators, ACTION_BODIES, actionConfig} = require('helpers/actionCreatorHelpers');
+const {config} = require('test/testConfig');
 
 // Sample action root, representing a module full of related actions
 const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
 
 // The various action keys that define something being modeled
 // Models are various manifestations of the locations
-const MODELS = module.exports.MODELS = R.mapObjIndexed((v, k) => R.toLower(k), {
+const M = module.exports.MODELS = R.mapObjIndexed((v, k) => R.toLower(k), {
   CITIES: '',
   DATAPOINTS: '',
   BLOCKNAMES: '',
@@ -37,22 +36,23 @@ const MODELS = module.exports.MODELS = R.mapObjIndexed((v, k) => R.toLower(k), {
 
 const scope = ['user'];
 const projectScope = R.concat(scope, ['project']);
-const ACTION_CONFIGS = module.exports.ACTION_CONFIGS = R.map(R.merge({scope, root: ACTION_ROOT}, [
-  {model: MODELS.BLOCKNAMES, verb: FETCH, ret: ACTION_BODIES[FETCH]},
-  {model: MODELS.CITIES, verb: FETCH, ret: ACTION_BODIES[FETCH]},
-  {model: MODELS.CITIES, verb: ADD, ret: ACTION_BODIES[FETCH]},
-  {model: MODELS.DATAPOINTS, verb: FETCH, ret: ACTION_BODIES[FETCH]},
-  {model: MODELS.DATAPOINT_PROFILES, verb: FETCH, ret: ACTION_BODIES[FETCH]},
-  {scope: projectScope, model: MODELS.PROJECT_PROFILES, verb: FETCH, ret: ACTION_BODIES[FETCH]},
-  {scope: projectScope, model: MODELS.PROJECT_LOCATIONS, verb: ADD, ret: ACTION_BODIES[ADD]},
-  {scope: projectScope, model: MODELS.PROJECT_LOCATIONS, verb: REMOVE, ret: ACTION_BODIES[REMOVE]}
-]));
+const rootedConfig = actionConfig(ACTION_ROOT);
+const ACTION_CONFIGS = module.exports.ACTION_CONFIGS = [
+  rootedConfig(M.BLOCKNAMES, FETCH, scope),
+  rootedConfig(M.CITIES, FETCH, scope),
+  rootedConfig(M.CITIES, ADD, scope),
+  rootedConfig(M.DATAPOINTS, FETCH, scope),
+  rootedConfig(M.DATAPOINT_PROFILES, FETCH, scope),
+  rootedConfig(M.PROJECT_PROFILES, FETCH, projectScope),
+  rootedConfig(M.PROJECT_LOCATIONS, ADD, projectScope),
+  rootedConfig(M.PROJECT_LOCATIONS, REMOVE, projectScope)
+];
 
 /**
  * cycle.js sources that process sample async actions
  */
 module.exports.sampleCycleSources = overrideSources({
-  CONFIG: testConfig,
+  CONFIG: config,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {
     configByType: makeActionConfigLookup(ACTION_CONFIGS)
@@ -64,6 +64,7 @@ module.exports.sampleCycleSources = overrideSources({
  * since diagram test do this themselves with the diagram streams
  */
 const sampleCycleSourcesForDiagramTests = module.exports.sampleCycleSourcesForDiagramTests = overrideSourcesWithoutStreaming({
+  CONFIG: config,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {
     configByType: makeActionConfigLookup(ACTION_CONFIGS)
@@ -106,10 +107,6 @@ module.exports.actionConfigs = R.fromPairs(R.map(actionKey => [actionKey, action
  * The actionCreators that produce the action bodies
  * @returns {Object} keyed by action key and valued by action function
  */
-module.exports.actions = v(scopeActionCreators(ACTION_CONFIGS, scopeValues)
-, [
-  ['actionConfigs', [Array]],
-  ['scope', [Object]]
-], 'actions');
+module.exports.actions = scopeActionCreators(ACTION_CONFIGS, scopeValues);
 
 

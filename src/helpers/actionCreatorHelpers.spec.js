@@ -11,7 +11,7 @@
 const R = require('ramda');
 const { VERBS, PHASES, actionType, actionKey } = require('./actionHelpers');
 const {ACTION_ROOT, MODELS, ACTION_CONFIGS} = require('../test/sampleActions');
-const { ACTION_BODIES, creator, asyncActionCreators, makeActionCreators, makeActionCreatorsForConfig } = require('./actionCreatorHelpers');
+const { ACTION_BODIES, creator, asyncActionCreators, makeActionCreators, makeActionCreatorsForConfig, actionConfig } = require('./actionCreatorHelpers');
 const { filterWithKeys, capitalize } = require('rescape-ramda');
 
 describe('actionHelpers', () => {
@@ -160,5 +160,11 @@ describe('actionHelpers', () => {
       request: {cow: {type: 'critter', likes: 'grass'}},
       error: {message: 'Critter already exists!'}
     });
+  });
+
+  test('actionConfig', () => {
+    expect(actionConfig('sample', 'foo', VERBS.FETCH, ['user'])).toEqual(
+      {root: 'sample', model: 'foo', verb: VERBS.FETCH, scope:['user'], ret: ACTION_BODIES[VERBS.FETCH]}
+    );
   });
 });
