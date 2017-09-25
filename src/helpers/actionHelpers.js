@@ -12,6 +12,7 @@
 const R = require('ramda');
 const {mapKeys, capitalize, camelCase} = require('rescape-ramda');
 const {v} = require('rescape-validate');
+const {PropTypes} = require('prop-types');
 
 module.exports.DRIVERS = {
   HTTP: 'HTTP'
@@ -136,13 +137,13 @@ const PHASES = module.exports.PHASES = {
  * @returns {String} the action value string:
  * `${toLower(camelCase(verb))}${capitalize(camelCase(MODEL))}${capitalize(camelCase(toLower(PHASE))}
  */
-const actionKey = module.exports.actionKey = v(R.curry((model, verb, phase) =>
+const actionName = module.exports.actionName = v(R.curry((model, verb, phase) =>
     `${R.toLower(camelCase(verb))}${capitalize(camelCase(model))}${capitalize(camelCase(R.toLower(phase)))}`),
 [
   ['model', [String]],
   ['verb', [String]],
   ['phase', [String]]
-], 'actionKey');
+], 'actionName');
 
 /**
  * Creates the unique type string of an action
@@ -173,7 +174,7 @@ const actionType = module.exports.actionType = v(R.curry((actionRoot, model, ver
  * [PHASES.ERROR]: location/cities/FETCH_ERROR
  * }
  */
-const asyncActionsPhaseKeys = module.exports.asyncActionsGenericKeys = v(R.curry((actionRoot, model, verb) => {
+const asyncActionsPhaseKeys = module.exports.asyncActionsPhaseKeys = v(R.curry((actionRoot, model, verb) => {
     const actionValueMaker = actionType(actionRoot, model, verb);
     return R.compose(
         R.fromPairs,
@@ -183,7 +184,24 @@ const asyncActionsPhaseKeys = module.exports.asyncActionsGenericKeys = v(R.curry
   ['actionRoot', [String]],
   ['model', [String]],
   ['verb', [String]]
-], 'asyncActionsGenericKeys');
+], 'asyncActionsPhaseKeys');
+
+/**
+ * Just like asyncActionPahseKeys but for an actionConfig object
+ * @param {Object} actionConfigs Configuration of available actions
+ * @returns {Object} An object keyed by phase (e.g. Phase.FETCH) and valued by action type
+ */
+module.exports.asyncActionsPhaseKeysForActionConfig = v(actionConfig =>
+    asyncActionsPhaseKeys(actionConfig.root, actionConfig.model, actionConfig.verb)
+  ,
+  [
+    ['actionConfig', PropTypes.shape({
+      root: PropTypes.string.isRequired,
+      model: PropTypes.string.isRequired,
+      verb: PropTypes.string.isRequired
+    })]
+  ], 'makeActionTypesLookupByPhaseKey'
+);
 
 /**
  * Async operations have three standard actionTypes for each verb type. Curryable.
@@ -194,7 +212,7 @@ const asyncActionsPhaseKeys = module.exports.asyncActionsGenericKeys = v(R.curry
  * e.g. {fetchCitiesData: location/cities/FETCH_REQUEST, fetchUserSuccess: location/cities/FETCH_SUCCESS, fetchUserError: location/cities/FETCH_ERROR}
  */
 const asyncActions = module.exports.asyncActions = v(R.curry((actionRoot, model, verb) => {
-    const keyMaker = actionKey(model, verb);
+    const keyMaker = actionName(model, verb);
     return mapKeys(phase => keyMaker(phase), asyncActionsPhaseKeys(actionRoot, model, verb));
 }), [
   ['actionRoot', [String]],
@@ -204,7 +222,7 @@ const asyncActions = module.exports.asyncActions = v(R.curry((actionRoot, model,
 
 
 /**
- * Creates actions for a given scope based on the configuration
+ * Creates an action name to type mapping for a given scope based on the configuration
  * @param {Object} actionConfigs Configuration of available actions
  * @example
  * // MODELS.BLOCKNAMES is simply 'blocknames' and so on
@@ -224,9 +242,9 @@ const asyncActions = module.exports.asyncActions = v(R.curry((actionRoot, model,
  * @example
  * {
  * ...
- * FETCH_CITIES_REQUEST: location/cities/FETCH_REQUEST,
- * FETCH_CITIES_SUCCESS: location/cities/FETCH_SUCCESS,
- * FETCH_CITIES_ERROR: location/cities/FETCH_ERROR
+ * fetchCitiesRequest: location/cities/FETCH_REQUEST,
+ * fetchCitiesSuccess: location/cities/FETCH_SUCCESS,
+ * fetchCitiesError: location/cities/FETCH_ERROR
  * ...
  * }
  */
@@ -239,6 +257,8 @@ module.exports.makeActionTypesLookup = v(actionConfigs =>
 [
   ['actionConfigs', [Object]]
 ], 'makeActionTypesLookup');
+
+
 
 /**
  * Like makeActionTypesLookup but returns the action configs keyed by the action's type.
@@ -283,3 +303,21 @@ module.exports.makeActionConfigLookup = v(actionConfigs =>
   [
     ['actionConfigs', [Object]]
   ], 'makeActionConfigLookup');
+
+/**
+ * Given a model, verb, phase ,and list of actionConfigs, resolves the actionConfig with
+ * that model, verb, and phase.
+ * @param {String} model The model string
+ * @param {String} verb The verb string
+ * @param {String} verb The phase string
+ * @param {object} actionConfig The action config
+ */
+module.exports.resolveActionConfig = v((model, verb, phase, actionConfigs) =>
+  R.find(R.both(R.propEq('model', model), R.propEq('verb', verb)), actionConfigs)
+,
+[
+  ['model', PropTypes.string.isRequired],
+  ['verb', PropTypes.string.isRequired],
+  ['phase', PropTypes.string.isRequired],
+  ['actionConfigs', PropTypes.array.isRequired]
+], 'resolveActionConfigs');

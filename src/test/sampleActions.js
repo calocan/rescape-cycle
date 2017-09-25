@@ -103,7 +103,7 @@ const actionTypeLookup = module.exports.actionTypeLookup = makeActionTypesLookup
  * Get the action configs for the actions we are testing
  * @returns {Object} keyed by action key and valued by action config
  */
-module.exports.actionConfigs = R.fromPairs(R.map(actionKey => [actionKey, actionConfigLookup[actionTypeLookup[actionKey]]], testActions));
+module.exports.actionConfigs = R.fromPairs(R.map(actionName => [actionName, actionConfigLookup[actionTypeLookup[actionName]]], testActions));
 
 /**
  * The actionCreators that produce the action bodies

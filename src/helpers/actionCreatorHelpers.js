@@ -10,7 +10,7 @@
  */
 
 const R = require('ramda');
-const {actionType, actionKey, PHASES, VERBS} = require('./actionHelpers');
+const {actionType, actionName, PHASES, VERBS} = require('./actionHelpers');
 const {v, vMergeScope} = require('rescape-validate');
 const PropTypes = require('prop-types');
 
@@ -92,7 +92,7 @@ const asyncActionCreators = module.exports.asyncActionCreators = v(R.curry((acti
   // Creates action type (e.g. 'location/cities/fetch_data')
   const typeMaker = actionType(actionRoot, model, verb);
   // Creates action key (e.g. 'FETCH_CITIES_REQUEST')
-  const keyMaker = actionKey(model, verb);
+  const keyMaker = actionName(model, verb);
   const {REQUEST, SUCCESS, FAILURE} = PHASES;
   return {
     // Create each action creator of the async process.
@@ -205,11 +205,17 @@ module.exports.scopeActionCreators = v((actionConfigs, scope) => makeActionCreat
  * Returns the name of the actionCreator for the given actionConfig and phase
  * This is used when an actionCreator needs to be called in response to a previous actionCreator call,
  * namely calling a SUCCESS or FAILURE phase actionCreator REQUEST
+ * @param {Object} actionConfig The action config
+ * @param {String} phase The phase, such as PHASES.REQUEST
+ * @returns {String} The action name
  */
 module.exports.actionCreatorNameForPhase = v((actionConfig, phase) =>
-  actionKey(actionConfig.model, actionConfig.verb, phase)
+  actionName(actionConfig.model, actionConfig.verb, phase)
 , [
-  ['actionConfig', PropTypes.shape().isRequired],
+  ['actionConfig', PropTypes.shape({
+    model: PropTypes.string.isRequired,
+    verb: PropTypes.string.isRequired
+  }).isRequired],
   ['phase', PropTypes.string.isRequired]
 ], 'actionCreatorNameForPhase');
 

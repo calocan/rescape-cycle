@@ -9,7 +9,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const R = require('ramda');
-const { VERBS, PHASES, actionType, actionKey } = require('./actionHelpers');
+const { VERBS, PHASES, actionType, actionName } = require('./actionHelpers');
 const {ACTION_ROOT, MODELS, ACTION_CONFIGS} = require('../test/sampleActions');
 const { ACTION_BODIES, creator, asyncActionCreators, makeActionCreators, makeActionCreatorsForConfig, actionConfig } = require('./actionCreatorHelpers');
 const { filterWithKeys, capitalize } = require('rescape-ramda');
@@ -48,7 +48,7 @@ describe('actionHelpers', () => {
     const [root, model, verb] = [ACTION_ROOT, MODELS.CITIES, VERBS.FETCH];
     const {REQUEST, SUCCESS, FAILURE} = PHASES;
     // Makes a lookup of phase to actionType for test validation
-    const actionKeys = R.map(actionKey(model, verb), PHASES);
+    const actionNames = R.map(actionName(model, verb), PHASES);
     const actionTypes = R.map(actionType(root, model, verb), PHASES);
     const actionCreators = asyncActionCreators(root, model, verb, {
       [REQUEST]: 'payload',
@@ -58,7 +58,7 @@ describe('actionHelpers', () => {
     const data = {name: 'Paris'};
     // Call the _data action and expect data is mirrored in payload
     expect(
-      actionCreators[actionKeys[REQUEST]](scope, data)
+      actionCreators[actionNames[REQUEST]](scope, data)
     ).toEqual(
       {type: actionTypes[REQUEST], payload: R.merge({user: 1}, data)}
     );
@@ -66,7 +66,7 @@ describe('actionHelpers', () => {
     const success = {name: 'Paris', fullName: 'Paris, France', description: 'delicieux'};
     // Call the _success action and expect success is merged in
     expect(
-      actionCreators[actionKeys[SUCCESS]](scope, success)
+      actionCreators[actionNames[SUCCESS]](scope, success)
     ).toEqual(
       R.merge({type: actionTypes[SUCCESS], user: 1}, success)
     );
@@ -74,7 +74,7 @@ describe('actionHelpers', () => {
     const error = {message: 'Closed for 100 year war'};
     // Call the _failure action and expect error in error key
     expect(
-      actionCreators[actionKeys[FAILURE]](scope, error)
+      actionCreators[actionNames[FAILURE]](scope, error)
     ).toEqual(
       {type: actionTypes[FAILURE], error: R.merge(error, {user: 1})}
     );

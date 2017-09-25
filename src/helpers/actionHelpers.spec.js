@@ -9,16 +9,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const R = require('ramda');
-const {asyncActions, asyncActionsGenericKeys, makeActionTypesLookup, makeActionConfigLookup} = require('./actionHelpers');
+const {asyncActions, asyncActionsPhaseKeys, makeActionTypesLookup, makeActionConfigLookup, resolveActionConfig}  = require('./actionHelpers');
 const {capitalize} = require('rescape-ramda');
-const {ACTION_ROOT, MODELS} = require('../test/sampleActions');
+const {ACTION_ROOT, MODELS, ACTION_CONFIGS, actionConfigLookup} = require('../test/sampleActions');
 const {VERBS, PHASES} = require('./actionHelpers');
 const {FETCH} = VERBS;
 const {REQUEST, SUCCESS, FAILURE} = PHASES;
 
 describe('actionHelpers', () => {
-  test('asyncActionsGenericKeys', () => {
-    expect(asyncActionsGenericKeys(ACTION_ROOT, MODELS.CITIES, FETCH)).toEqual(
+  test('asyncActionsPhaseKeys', () => {
+    expect(asyncActionsPhaseKeys(ACTION_ROOT, MODELS.CITIES, FETCH)).toEqual(
       {
         REQUEST: `${ACTION_ROOT}/${MODELS.CITIES}/${FETCH}_REQUEST`,
         SUCCESS: `${ACTION_ROOT}/${MODELS.CITIES}/${FETCH}_SUCCESS`,
@@ -102,5 +102,19 @@ describe('actionHelpers', () => {
       }
     });
   });
+
+  test('resolveActionConfig', () => {
+    expect(
+      R.pick(['model', 'verb', 'phase'],
+        resolveActionConfig(MODELS.CITIES, FETCH, PHASES.REQUEST, R.values(actionConfigLookup))
+      )
+    ).toEqual(
+      {
+        model: MODELS.CITIES,
+        verb: FETCH,
+        phase: PHASES.REQUEST
+      }
+    );
+  })
 });
 

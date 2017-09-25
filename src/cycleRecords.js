@@ -28,7 +28,7 @@ const {CYCLE_API_KEY, API_CONFIG} = require('./helpers/configHelpers');
  * against a PouchDb.
  * @param {Stream} CONFIG Application Configuration
  * @param {Stream} ACTION_CONFIG Configuration of actions to match in the following format:
- * @param {String} ACTION_CONFIG.actionPath 'scope/actionKey' Used to name the PouchDb Design Doc
+ * @param {String} ACTION_CONFIG.actionPath 'scope/actionName' Used to name the PouchDb Design Doc
  * @param {String} ACTION_CONFIG.actionUpdateName React Action name to perform updates
  * @param {String} ACTION_CONFIG.actionFetchName React Action name to perform fetches
  * @param {Function} ACTION_CONFIG.actionFetchSuccess React Action creator for a successful fetch
