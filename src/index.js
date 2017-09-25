@@ -13,8 +13,8 @@ const R = require('ramda');
 
 module.exports = R.mergeAll([
   require('./cycleRecords'),
-  require('helpers/actionHelpers'),
-  require('helpers/actionCreatorHelpers'),
-  require('helpers/cycleActionHelpers'),
-  require('helpers/jestCycleHelpers')
+  require('./helpers/actionHelpers'),
+  require('./helpers/actionCreatorHelpers'),
+  require('./helpers/cycleActionHelpers'),
+  require('./helpers/jestCycleHelpers')
 ]);

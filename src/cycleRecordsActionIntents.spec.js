@@ -9,8 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRA/ACNTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const R = require('ramda');
-const {apiUri} = require('helpers/configHelpers');
-const {assertSourcesSinks} = require('helpers/jestCycleHelpers');
+const {apiUri} = require('./helpers/configHelpers');
+const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const { sampleCycleSourcesForDiagramTests, actions, actionConfigs, actionTypeLookup} = require('test/sampleActions');
 const {cities} = require('test/testCities');
 const {cycleRecords} = require('./cycleRecords');

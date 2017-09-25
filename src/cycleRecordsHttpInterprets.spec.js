@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRA/ACNTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const R = require('ramda');
-const {apiUri} = require('helpers/configHelpers');
+const {apiUri} = require('./helpers/configHelpers');
 const { actions, actionConfigs, actionTypeLookup } = require('test/sampleActions');
 const {cities} = require('test/testCities');
 const {fetchRecordHttpInterpret, updateRecordHttpInterpret} = require('./cycleRecordsHttpInterprets');
-const {API_CONFIG} = require('helpers/configHelpers');
+const {API_CONFIG} = require('./helpers/configHelpers');
 const {config} = require('test/testConfig');
 const {reqPath} = require('rescape-ramda').throwing;
 

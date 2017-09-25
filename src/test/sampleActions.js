@@ -12,12 +12,12 @@
  * Sample actions fro testing
  */
 
-const {VERBS, makeActionConfigLookup, makeActionTypesLookup} = require('helpers/actionHelpers');
+const {VERBS, makeActionConfigLookup, makeActionTypesLookup} = require('../helpers/actionHelpers');
 const R = require('ramda');
 const {REPLACE, FETCH, ADD, REMOVE} = VERBS;
-const {overrideSources, overrideSourcesWithoutStreaming} = require('helpers/cycleActionHelpers');
+const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/cycleActionHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
-const {scopeActionCreators, actionConfig} = require('helpers/actionCreatorHelpers');
+const {scopeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
 const {config} = require('test/testConfig');
 
 // Sample action root, representing a module full of related actions

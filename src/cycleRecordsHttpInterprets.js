@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {mapDefault} = require('rescape-ramda');
 const {xsm} = mapDefault('xs', require('xstream'));
-const {apiUri} = require('helpers/configHelpers');
+const {apiUri} = require('./helpers/configHelpers');
 const {v} = require('rescape-validate');
 const PropTypes = require('prop-types');
 

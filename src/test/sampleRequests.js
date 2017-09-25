@@ -10,14 +10,14 @@
  */
 
 const R = require('ramda');
-const {apiUri} = require('helpers/configHelpers');
+const {apiUri} = require('../helpers/configHelpers');
 const { actions, actionConfigs, actionTypeLookup} = require('test/sampleActions');
 const {cities} = require('test/testCities');
 const {reqPath} = require('rescape-ramda').throwing;
 const {config} = require('test/testConfig');
 const {
   VERBS: { FETCH, UPDATE, ADD, REMOVE, SELECT, DESELECT }
-} = require('helpers/actionHelpers');
+} = require('../helpers/actionHelpers');
 
 const fetchCitiesRequestBody = module.exports.fetchCitiesRequestBody = {
   request: {

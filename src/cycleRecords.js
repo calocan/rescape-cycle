@@ -21,7 +21,7 @@ const {
 const {reqPathPropEq, reqPath} = require('rescape-ramda').throwing;
 const {v} = require('rescape-validate');
 const PropTypes = require('prop-types');
-const {CYCLE_API_KEY, API_CONFIG} = require('helpers/configHelpers');
+const {CYCLE_API_KEY, API_CONFIG} = require('./helpers/configHelpers');
 
 /**
  * Combines Redux ACTION Driver with Pouch ACTION Driver to perform CRUD operations
