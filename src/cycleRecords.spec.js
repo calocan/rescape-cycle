@@ -31,8 +31,8 @@ describe('cycleRecords', () => {
         })
       },
       ACTION: {
-        // User intends to store cities
-        a: actions.addCitiesRequest(R.values(cities)),
+        // User intends to store cities. Omit ids to simulate an add
+        a: actions.addCitiesRequest(R.values(R.omit(['id'], cities))),
 
         // User intents to fetch cities
         c: actions.fetchCitiesRequest(cities)
@@ -55,16 +55,8 @@ describe('cycleRecords', () => {
       ACTION: {
         // In response to the HTTP sources return add and fetch response,
         // we expect to syn these action successes
-        m: actions.addCitiesSuccess(
-          {
-            data: cities
-          }
-        ),
-        n: actions.fetchCitiesSuccess(
-          {
-            data: cities
-          }
-        )
+        m: actions.addCitiesSuccess({data: cities}),
+        n: actions.fetchCitiesSuccess({data: cities})
       }
     };
 

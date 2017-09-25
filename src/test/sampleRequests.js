@@ -54,7 +54,7 @@ const addCitiesRequestBody = module.exports.addCitiesRequestBody = {
   query: {
     op: R.toLower(ADD),
     path: `/${actionConfigs.addCitiesRequest.model}`,
-    value: R.omit(['type'], actions.addCitiesRequest(R.values(cities)))
+    value: R.omit(['type'], actions.addCitiesRequest(R.values(R.omit(['id'], cities))))
   },
   // We process all responses in the same place for now,
   // so use a catch-all category name
