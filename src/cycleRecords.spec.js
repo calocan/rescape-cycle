@@ -10,22 +10,15 @@
  */
 const R = require('ramda');
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
-const { sampleCycleSourcesForDiagramTests, actions, models: {CITIES}} = require('test/sampleActions');
+const {
+ sampleCycleSourcesForDiagramTests, actions, scopeValues, actionConfigs, MODELS: {CITIES},
+ fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesResponseSuccess, fetchCitiesResponseFailure, addCitiesResponseSuccess }
+ = require('test/sampleActions');
 const {cities} = require('test/testCities');
 const xs = require('xstream').default;
 const {cycleRecords} = require('./cycleRecords');
 const {reqPath} = require('rescape-ramda').throwing;
-const {VERBS: {FETCH, ADD}, PHASES} = require('helpers/actionHelpers');
-
-
-// Create sample request and response bodies
-const {sampleFetchRequestBody, samplePatchRequestBody, sampleFetchResponseSuccess, samplePatchResponseSuccess} =
-  require('test/sampleRequests');
-
-const fetchCitiesRequestBody = sampleFetchRequestBody({model: CITIES, verb: FETCH, phase: PHASES.REQUEST});
-const addCitiesRequestBody = sampleFetchRequestBody({model: CITIES, verb: ADD, phase: PHASES.REQUEST});
-const fetchCitiesResponseSuccess = sampleFetchRequestBody({model: CITIES, verb: FETCH, phase: PHASES.SUCCESS});
-const addCitiesResponseSuccess = sampleFetchRequestBody({model: CITIES, verb: ADD, phase: PHASES.SUCCESS});
+const {VERBS: {FETCH, ADD}, PHASES, resolveActionConfig} = require('helpers/actionHelpers');
 
 describe('cycleRecords', () => {
   test('add and fetch', (done) => {

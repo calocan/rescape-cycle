@@ -12,13 +12,15 @@
  * Sample actions fro testing
  */
 
-const {VERBS, makeActionConfigLookup, makeActionTypesLookup} = require('../helpers/actionHelpers');
+const {VERBS, PHASES, makeActionConfigLookup, makeActionTypesLookup, resolveActionConfig} = require('../helpers/actionHelpers');
 const R = require('ramda');
 const {REPLACE, FETCH, ADD, REMOVE} = VERBS;
 const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/cycleActionHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
+const {mapKeys} = require('rescape-ramda');
 const {scopeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
 const {config} = require('test/testConfig');
+const {cities} = require('test/testCities');
 
 // Sample action root, representing a module full of related actions
 const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
@@ -62,6 +64,12 @@ module.exports.sampleCycleSources = overrideSources({
 });
 
 /**
+ * Get the actionConfigLookup so we can generate expected results
+ * An object keyed by action type and valued by action config
+ */
+const actionConfigLookup = makeActionConfigLookup(ACTION_CONFIGS);
+
+/**
  * cycle.js sources that process sample async actions without making streams of the constants,
  * since diagram test do this themselves with the diagram streams
  */
@@ -69,7 +77,7 @@ const sampleCycleSourcesForDiagramTests = module.exports.sampleCycleSourcesForDi
   CONFIG: config,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {
-    configByType: makeActionConfigLookup(ACTION_CONFIGS)
+    configByType: actionConfigLookup
   }
 });
 
@@ -85,29 +93,30 @@ const scopeValues = module.exports.scopeValues = {
 };
 
 /**
- * The actions used for testing. Add more as needed
- * @type {[*]}
- */
-const testActions = ['addCitiesRequest', 'fetchCitiesRequest'];
-/**
- * Get the actionConfigLookup so we can generate expected results
- * An object keyed by action type and valued by action config
- */
-const actionConfigLookup = module.exports.actionConfigLookup = reqPath(['ACTION_CONFIG', 'configByType'], sampleCycleSourcesForDiagramTests);
-/**
  * Look up each action config for the action we are testing
- * an object keyed by action key and valued by action type
+ * an object keyed by action name and valued by action type
 */
 const actionTypeLookup = module.exports.actionTypeLookup = makeActionTypesLookup(ACTION_CONFIGS);
 /**
- * Get the action configs for the actions we are testing
- * @returns {Object} keyed by action key and valued by action config
+ * Map action names to action configs
+ * @returns {Object} keyed by action name and valued by action config
  */
-module.exports.actionConfigs = R.fromPairs(R.map(actionName => [actionName, actionConfigLookup[actionTypeLookup[actionName]]], testActions));
+const actionConfigs = module.exports.actionConfigs = R.map(type => actionConfigLookup[type], actionTypeLookup);
 
 /**
  * The actionCreators that produce the action bodies
- * @returns {Object} keyed by action key and valued by action function
+ * @returns {Object} keyed by action name and valued by action function
  */
 module.exports.actions = scopeActionCreators(ACTION_CONFIGS, scopeValues);
 
+
+// Create sample request and response bodies
+const {sampleFetchRequestBody, samplePatchRequestBody, sampleFetchResponseSuccess, sampleFetchResponseFailure, samplePatchResponseSuccess} =
+  require('test/testRequests');
+const fetchConfig = resolveActionConfig(M.CITIES, FETCH, R.__, R.values(actionConfigs));
+const addConfig = resolveActionConfig(M.CITIES, ADD, R.__, R.values(actionConfigs));
+module.exports.fetchCitiesRequestBody = sampleFetchRequestBody(fetchConfig(PHASES.REQUEST), scopeValues, cities);
+module.exports.addCitiesRequestBody = samplePatchRequestBody(addConfig(PHASES.REQUEST), scopeValues, cities);
+module.exports.fetchCitiesResponseSuccess = sampleFetchResponseSuccess(fetchConfig(PHASES.SUCCESS), scopeValues, cities);
+module.exports.fetchCitiesResponseFailure = sampleFetchResponseFailure(fetchConfig(PHASES.FAILURE), scopeValues, cities);
+module.exports.addCitiesResponseSuccess = samplePatchResponseSuccess(addConfig(PHASES.SUCCESS), scopeValues, cities);

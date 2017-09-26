@@ -17,7 +17,6 @@ const {reqPath} = require('rescape-ramda').throwing;
 const {config} = require('test/testConfig');
 const {PropTypes} = require('prop-types');
 const {
-  VERBS: { FETCH, UPDATE, ADD, REMOVE, SELECT, DESELECT },
   PHASES: { REQUEST, SUCCESS, FAILURE}
 } = require('../helpers/actionHelpers');
 const {v} = require('rescape-validate');
@@ -26,12 +25,13 @@ const {v} = require('rescape-validate');
  * Returns a sample fetch request body for tests
  * @param {Object} actionConfig An actionConfig for fetching the model of iterest
  * @param {Object|Array} objs Functor representing the instances
+ * @param {Object} scopeValues The scopeValues values
  * @returns {Object} The sample request body based on the actionConfig and objs
  */
-const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry((actionConfig, objs) => {
+const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry((actionConfig, scopeValues, objs) => {
   const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
-  const actionName = actionCreatorNameForPhase(actionConfig);
-  const actions = makeActionCreatorsForConfig(actionConfig);
+  const actionName = actionCreatorNameForPhase(actionConfig, REQUEST);
+  const actions = makeActionCreatorsForConfig(actionConfig, scopeValues);
   return {
     request: {
       url: `${apiUri(reqPath(['settings', 'api'], config))}/${actionConfig.model}`,
@@ -45,7 +45,8 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
 }),
 [
   ['actionConfig', PropTypes.shape().isRequired],
-  ['objs', PropTypes.array.isRequired]
+  ['scopeValues', PropTypes.shape().isRequired],
+  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
 ], 'sampleFetchRequestBody');
 
 
@@ -53,26 +54,29 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
  * HTTP driver sample response. including the request since that is what the Cycle.js HTTP driver does
  * @params {Object} actionConfig An actionConfig for fetching the model of interest
  * @params {Object|Array} objs Functor representing the instances
+ * @param {Object} scopeValues The scopeValues values
  * @returns {Object} The sample response body based on the actionConfig and objs
  */
-module.exports.sampleFetchResponseSuccess = v(R.curry((actionConfig, objs) => R.merge(
-  sampleFetchRequestBody(actionConfig, objs), {
+module.exports.sampleFetchResponseSuccess = v(R.curry((actionConfig, scopeValues, objs) => R.merge(
+  sampleFetchRequestBody(actionConfig, scopeValues, objs), {
     status: 200,
     data: objs
   }
 )),
 [
   ['actionConfig', PropTypes.shape().isRequired],
-  ['objs', PropTypes.array.isRequired]
+  ['scopeValues', PropTypes.shape().isRequired],
+  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
 ], 'sampleFetchResponseSuccess');
 
 /**
  * HTTP driver sample error response.
  * @params {Object} actionConfig An actionConfig for fetching the model of interest
  * @params {Object|Array} objs Functor representing the instances
+ * @param {Object} scopeValues The scopeValues values
  * @returns {Object} The sample response error based on the actionConfig and objs
  */
-module.exports.sampleFetchResponseError = v(R.curry((actionConfig, objs) => R.merge(
+module.exports.sampleFetchResponseFailure = v(R.curry((actionConfig, scopeValues, objs) => R.merge(
   sampleFetchRequestBody(objs), {
     status: 500,
     message: 'Internal Server Error'
@@ -80,19 +84,21 @@ module.exports.sampleFetchResponseError = v(R.curry((actionConfig, objs) => R.me
 )),
 [
   ['actionConfig', PropTypes.shape().isRequired],
-  ['objs', PropTypes.array.isRequired]
-], 'sampleFetchResponseError');
+  ['scopeValues', PropTypes.shape().isRequired],
+  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+], 'sampleFetchResponseFailure');
 
 /**
  * HTTP driver sample patch request body
  * @params {Object} actionConfig An actionConfig for fetching the model of interest
  * @params {Object|Array} objs Functor representing the instances
+ * @param {Object} scopeValues The scopeValues values
  * @returns {Object} The sample request patch body based on the actionConfig and objs
  */
-const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry((actionConfig, objs) => {
+const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry((actionConfig, scopeValues, objs) => {
   const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
   const actionName = actionCreatorNameForPhase(actionConfig, REQUEST);
-  const actions = makeActionCreatorsForConfig(actionConfig);
+  const actions = makeActionCreatorsForConfig(actionConfig, scopeValues);
   return {
     // PATCH calls don't have a URL path, since the path is in the standarized
     // JSON query
@@ -101,7 +107,7 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
     type: actionTypeLookup[REQUEST],
     query: {
       op: R.toLower(actionConfig.verb),
-      path: `/${actionConfig[actionName].model}`,
+      path: `/${actionConfig.model}`,
       value: R.omit(['type'], actions[actionName](R.values(R.omit(['id'], objs))))
     },
     // We process all responses in the same place for now,
@@ -111,21 +117,24 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
 }),
 [
   ['actionConfig', PropTypes.shape().isRequired],
-  ['objs', PropTypes.array.isRequired]
+  ['scopeValues', PropTypes.shape().isRequired],
+  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
 ], 'samplePatchRequestBody');
 
 /**
  * HTTP driver sample patch response body
  * @params {Object} actionConfig An actionConfig for fetching the model of interest
  * @params {Object|Array} objs Functor representing the instances
+ * @param {Object} scopeValues The scopeValues values
  * @returns {Object} The sample response patch body based on the actionConfig and objs
  */
-module.exports.samplePatchResponseSuccess = v(R.curry((actionConfig, objs) => ({
+module.exports.samplePatchResponseSuccess = v(R.curry((actionConfig, scopeValues, objs) => ({
   status: 200,
-  request: samplePatchRequestBody(actionConfig, objs),
+  request: samplePatchRequestBody(actionConfig, scopeValues, objs),
   data: objs
 })),
 [
   ['actionConfig', PropTypes.shape().isRequired],
-  ['objs', PropTypes.array.isRequired]
+  ['scopeValues', PropTypes.shape().isRequired],
+  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
 ], 'samplePatchResponseSuccess');

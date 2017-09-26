@@ -59,7 +59,7 @@ const intent = v((response, actionConfigs) => {
   if (R.contains(response.status, R.range(200, 300))) {
     // If we get a 200 range status code, call the SUCCESS action creator
     // TODO not sure if the whole response should be sent
-    return actionCreators[actionCreatorNameForPhase(actionConfig)](
+    return actionCreators[actionCreatorNameForPhase(actionConfig, SUCCESS)](
       // Omit the request and status from the action body. Request is HTTP-driver specific and shouldn't
       // concern the React action.
       R.omit(['status', 'request'], response)

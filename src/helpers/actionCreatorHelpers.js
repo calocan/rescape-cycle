@@ -92,17 +92,17 @@ const asyncActionCreators = module.exports.asyncActionCreators = v(R.curry((acti
   // Creates action type (e.g. 'location/cities/fetch_data')
   const typeMaker = actionType(actionRoot, model, verb);
   // Creates action key (e.g. 'FETCH_CITIES_REQUEST')
-  const keyMaker = actionName(model, verb);
+  const nameMaker = actionName(model, verb);
   const {REQUEST, SUCCESS, FAILURE} = PHASES;
   return {
     // Create each action creator of the async process.
     // The return value of the creator is the type: REQUEST|SUCCESS|FAILURE
     // as well as the configuration specified in rets. If rets is not configured
     // the merge function is used to tell creator to merge scope with the passed in obj
-    // along with the action type key
-    [keyMaker(REQUEST)]: R.curry((scope, obj) => creator(typeMaker(REQUEST), rets[REQUEST] || R.merge, scope, obj)),
-    [keyMaker(SUCCESS)]: R.curry((scope, obj) => creator(typeMaker(SUCCESS), rets[SUCCESS] || R.merge, scope, obj)),
-    [keyMaker(FAILURE)]: R.curry((scope, obj) => creator(typeMaker(FAILURE), rets[FAILURE] || R.merge, scope, obj))
+    // along with the action name
+    [nameMaker(REQUEST)]: R.curry((scope, obj) => creator(typeMaker(REQUEST), rets[REQUEST] || R.merge, scope, obj)),
+    [nameMaker(SUCCESS)]: R.curry((scope, obj) => creator(typeMaker(SUCCESS), rets[SUCCESS] || R.merge, scope, obj)),
+    [nameMaker(FAILURE)]: R.curry((scope, obj) => creator(typeMaker(FAILURE), rets[FAILURE] || R.merge, scope, obj))
   };
 }), [
   ['actionRoot', PropTypes.string.isRequired],
@@ -115,8 +115,8 @@ const asyncActionCreators = module.exports.asyncActionCreators = v(R.curry((acti
  * Creates actions for a given scope based on the configuration.
  * Each configured item in actionConfigs results in three actionCreators, one for initiating an async call,
  * one for success, and one for failure This could in the future be changed to accommodate open streams, retries, etc
- * @param {PropTypes.shape().isRequired} actionConfig Configuration of available actions
- * @param {PropTypes.string.isRequired} actionConfig.scope A list of keys to be matched with the passed in scope. For instance,
+ * @param {Object} actionConfig Configuration of available actions
+ * @param {Object} actionConfig.scope A list of keys to be matched with the passed in scope. For instance,
  * if this is ['user', 'project'] and the passed in scope is {user, project, location}, then {user, project} will be
  * added passed to the configured actionCreators in addition to whatever is eventually sent to the action from a
  * Component

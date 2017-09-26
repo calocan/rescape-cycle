@@ -273,18 +273,18 @@ module.exports.makeActionTypesLookup = v(actionConfigs =>
  * const ACTION_CONFIGS = [
  * {model: MODELS.BLOCKNAMES, verb: FETCH, ret: {...}},
  * {model: MODELS.CITIES, verb: FETCH, ret: {...}},
- * {model: MODELS.REQUESTPOINTS, verb: FETCH, ret: {...}},
- * {model: MODELS.REQUESTPOINT_PROFILES, verb: FETCH, ret: {...}},
+ * {model: MODELS.DATAPOINTS, verb: FETCH, ret: {...}},
+ * {model: MODELS.DATAPOINT_PROFILES, verb: FETCH, ret: {...}},
  * {model: MODELS.PROJECT_PROFILES, verb: FETCH, ret: {...}},
  * {model: MODELS.PROJECT_LOCATIONS, verb: ADD, ret: {...}},
  * {model: MODELS.PROJECT_LOCATIONS, verb: REMOVE, ret: {...}}
  ];
- * @returns {Object} Copy of ACTION_CONFIGS with actions added
+ * @returns {Object} Phased ACTION_CONFIGS
  * @example
  * {
- * location/cities/FETCH_REQUEST: {model: MODELS.BLOCKNAMES, verb: FETCH, ret: {...}
- * location/cities/FETCH_SUCCESS: {model: MODELS.BLOCKNAMES, verb: FETCH, ret: {...}
- * location/cities/FETCH_FAILURE: {model: MODELS.BLOCKNAMES, verb: FETCH, ret: {...}
+ * location/cities/FETCH_REQUEST: {model: MODELS.BLOCKNAMES, verb: FETCH, phase: REQUEST, ret: {...}
+ * location/cities/FETCH_SUCCESS: {model: MODELS.BLOCKNAMES, verb: FETCH, phase: SUCCESS, ret: {...}
+ * location/cities/FETCH_FAILURE: {model: MODELS.BLOCKNAMES, verb: FETCH, phase: FAILURE, ret: {...}
  * ...
  * ]
  */
@@ -312,12 +312,16 @@ module.exports.makeActionConfigLookup = v(actionConfigs =>
  * @param {String} verb The phase string
  * @param {object} actionConfig The action config
  */
-module.exports.resolveActionConfig = v((model, verb, phase, actionConfigs) =>
-  R.find(R.both(R.propEq('model', model), R.propEq('verb', verb)), actionConfigs)
-,
+module.exports.resolveActionConfig = v(R.curry((model, verb, phase, actionConfigs) =>
+    R.find(R.allPass([
+      R.propEq('model', model),
+      R.propEq('verb', verb),
+      R.propEq('phase', phase)
+    ]), actionConfigs)
+  ),
 [
   ['model', PropTypes.string.isRequired],
   ['verb', PropTypes.string.isRequired],
   ['phase', PropTypes.string.isRequired],
-  ['actionConfigs', PropTypes.array.isRequired]
-], 'resolveActionConfigs');
+  ['actionConfigs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+], 'resolveActionConfig');

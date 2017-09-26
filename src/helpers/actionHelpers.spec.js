@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {asyncActions, asyncActionsPhaseKeys, makeActionTypesLookup, makeActionConfigLookup, resolveActionConfig}  = require('./actionHelpers');
 const {capitalize} = require('rescape-ramda');
-const {ACTION_ROOT, MODELS, ACTION_CONFIGS, actionConfigLookup} = require('../test/sampleActions');
+const {ACTION_ROOT, MODELS, ACTION_CONFIGS, actionConfigs} = require('../test/sampleActions');
 const {VERBS, PHASES} = require('./actionHelpers');
 const {FETCH} = VERBS;
 const {REQUEST, SUCCESS, FAILURE} = PHASES;
@@ -106,7 +106,7 @@ describe('actionHelpers', () => {
   test('resolveActionConfig', () => {
     expect(
       R.pick(['model', 'verb', 'phase'],
-        resolveActionConfig(MODELS.CITIES, FETCH, PHASES.REQUEST, R.values(actionConfigLookup))
+        resolveActionConfig(MODELS.CITIES, FETCH, PHASES.REQUEST, R.values(actionConfigs))
       )
     ).toEqual(
       {
