@@ -10,8 +10,10 @@
  */
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {successFailureHttpIntent} = require('./cycleRecordsHttpIntents');
-const { sampleCycleSourcesForDiagramTests, actions,
-  fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesResponseSuccess, fetchCitiesResponseFailure, addCitiesResponseSuccess
+const { actions,
+  testBodies: {
+    fetchCitiesResponseSuccess, fetchCitiesResponseFailure
+  }
 } = require('test/sampleActions');
 const {cities} = require('test/testCities');
 const xs = require('xstream').default;
@@ -56,4 +58,4 @@ describe('cycleRecordsIntents', () => {
       ACTION: { 'st|': sinks.ACTION }
     }, fakeCycle, done, { interval: 200 });
   });
-});
+}, 10000);

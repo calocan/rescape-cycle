@@ -11,9 +11,11 @@
 const R = require('ramda');
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {
- sampleCycleSourcesForDiagramTests, actions, scopeValues, actionConfigs, MODELS: {CITIES},
- fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesResponseSuccess, fetchCitiesResponseFailure, addCitiesResponseSuccess }
- = require('test/sampleActions');
+  sampleCycleSourcesForDiagramTests, actions, scopeValues, actionConfigs, MODELS: {CITIES},
+  testBodies: {
+    fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesResponseSuccess, fetchCitiesResponseFailure, addCitiesResponseSuccess
+  }
+} = require('test/sampleActions');
 const {cities} = require('test/testCities');
 const xs = require('xstream').default;
 const {cycleRecords} = require('./cycleRecords');

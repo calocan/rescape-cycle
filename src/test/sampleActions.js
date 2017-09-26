@@ -18,9 +18,11 @@ const {REPLACE, FETCH, ADD, REMOVE} = VERBS;
 const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/cycleActionHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
 const {mapKeys} = require('rescape-ramda');
-const {scopeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
+const {makeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
 const {config} = require('test/testConfig');
 const {cities} = require('test/testCities');
+const {projectLocations} = require('test/testProjectLocations');
+const {testBodies} = require('test/testHelpers.js');
 
 // Sample action root, representing a module full of related actions
 const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
@@ -29,10 +31,6 @@ const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
 // Models are various manifestations of the locations
 const M = module.exports.MODELS = R.mapObjIndexed((v, k) => R.toLower(k), {
   CITIES: '',
-  DATAPOINTS: '',
-  BLOCKNAMES: '',
-  DATAPOINT_PROFILES: '',
-  PROJECT_PROFILES: '',
   PROJECT_LOCATIONS: ''
 });
 
@@ -42,12 +40,8 @@ const rootedConfig = actionConfig(ACTION_ROOT);
 const userConfig = rootedConfig(scope);
 const projectConfig = rootedConfig(projectScope);
 const ACTION_CONFIGS = module.exports.ACTION_CONFIGS = [
-  userConfig(M.BLOCKNAMES, FETCH),
   userConfig(M.CITIES, FETCH),
   userConfig(M.CITIES, ADD),
-  userConfig(M.DATAPOINTS, FETCH),
-  userConfig(M.DATAPOINT_PROFILES, FETCH),
-  projectConfig(M.PROJECT_PROFILES, FETCH),
   projectConfig(M.PROJECT_LOCATIONS, ADD),
   projectConfig(M.PROJECT_LOCATIONS, REMOVE)
 ];
@@ -107,16 +101,7 @@ const actionConfigs = module.exports.actionConfigs = R.map(type => actionConfigL
  * The actionCreators that produce the action bodies
  * @returns {Object} keyed by action name and valued by action function
  */
-module.exports.actions = scopeActionCreators(ACTION_CONFIGS, scopeValues);
-
+module.exports.actions = makeActionCreators(ACTION_CONFIGS, scopeValues);
 
 // Create sample request and response bodies
-const {sampleFetchRequestBody, samplePatchRequestBody, sampleFetchResponseSuccess, sampleFetchResponseFailure, samplePatchResponseSuccess} =
-  require('test/testRequests');
-const fetchConfig = resolveActionConfig(M.CITIES, FETCH, R.__, R.values(actionConfigs));
-const addConfig = resolveActionConfig(M.CITIES, ADD, R.__, R.values(actionConfigs));
-module.exports.fetchCitiesRequestBody = sampleFetchRequestBody(fetchConfig(PHASES.REQUEST), scopeValues, cities);
-module.exports.addCitiesRequestBody = samplePatchRequestBody(addConfig(PHASES.REQUEST), scopeValues, cities);
-module.exports.fetchCitiesResponseSuccess = sampleFetchResponseSuccess(fetchConfig(PHASES.SUCCESS), scopeValues, cities);
-module.exports.fetchCitiesResponseFailure = sampleFetchResponseFailure(fetchConfig(PHASES.FAILURE), scopeValues, cities);
-module.exports.addCitiesResponseSuccess = samplePatchResponseSuccess(addConfig(PHASES.SUCCESS), scopeValues, cities);
+module.exports.testBodies = testBodies(ACTION_CONFIGS, scopeValues, {cities, projectLocations});

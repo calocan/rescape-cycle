@@ -137,15 +137,11 @@ const asyncActionCreators = module.exports.asyncActionCreators = v(R.curry((acti
  * (e.g. for a replace of the names of two users: {123: {name: 'Billy'}, 456: {name: 'Sally'}} the scope
  * merge results in {123: {name: 'Billy', ...scope}, 456: {name: 'Sally', ...scope}} )
  * @example
- *  // MODELS.BLOCKNAMES is simply 'blocknames' and so on
+ *  // MODELS.CITIES is simply 'cities' and so on
  *  // FETCH is simply 'fetch' and so on
  *  // For ret configuration see asyncActionCreators
 const ACTION_CONFIGS = [
- {scope, root: ACTION_ROOT, model: MODELS.BLOCKNAMES, verb: FETCH, ret: ACTION_BODIES},
  {scope, root: ACTION_ROOT, model: MODELS.CITIES, verb: FETCH, ret: ACTION_BODIES},
- {scope, root: ACTION_ROOT, model: MODELS.REQUESTPOINTS, verb: FETCH, ret: ACTION_BODIES},
- {scope, root: ACTION_ROOT, model: MODELS.REQUESTPOINT_PROFILES, verb: FETCH, ret: ACTION_BODIES},
- {scope: projectScope, root: ACTION_ROOT, model: MODELS.PROJECT_PROFILES, verb: FETCH, ret: ACTION_BODIES},
  {scope: projectScope, root: ACTION_ROOT, model: MODELS.PROJECT_LOCATIONS, verb: ADD, ret: ACTION_BODIES},
  {scope: projectScope, root: ACTION_ROOT, model: MODELS.PROJECT_LOCATIONS, verb: REMOVE, ret: ACTION_BODIES}
 ];
@@ -185,21 +181,6 @@ const makeActionCreatorsForConfig = module.exports.makeActionCreatorsForConfig =
   ['actionConfig', PropTypes.shape().isRequired],
   ['scope', PropTypes.shape().isRequired]
 ], 'makeActionCreatorsForConfig');
-
-/**
- * Returns the actionCreators with the given scope values
- * @param {Array} actionConfigs as described in makeActionCreators
- * @param {Object} scope Scope values based on the current
- * state of the application.
- * @returns {Object} Action creators keyed by a friendly name
- */
-module.exports.scopeActionCreators = v((actionConfigs, scope) => makeActionCreators(
-  actionConfigs,
-  scope
-), [
-  ['actionConfigs', PropTypes.array.isRequired],
-  ['scope', PropTypes.shape().isRequired]
-], 'scopeActionCreators');
 
 /**
  * Returns the name of the actionCreator for the given actionConfig and phase
