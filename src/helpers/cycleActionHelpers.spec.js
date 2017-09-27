@@ -34,7 +34,7 @@ describe('cycleActionHelpers', () => {
     // Make sure our ACTION_CONFIG overrides the default and makes it a stream
     expect(
       overrideSources(
-        { ACTION_CONFIG: apple })['ACTION_CONFIG']()
+        { ACTION_CONFIG: apple }).ACTION_CONFIG()
     ).toEqual(
       xs.of(apple)
     );

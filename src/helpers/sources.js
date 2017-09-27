@@ -25,6 +25,6 @@ module.exports.cycleMiddleware = cycleMiddleware;
  */
 module.exports.sources = {
   HTTP: makeHTTPDriver(),
-  ACTION: makeActionDriver(),
+  ACTION: makeActionDriver()
 };
 

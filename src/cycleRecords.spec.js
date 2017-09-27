@@ -24,7 +24,6 @@ const {VERBS: {FETCH, ADD}, PHASES, resolveActionConfig} = require('helpers/acti
 const {run} = require('@cycle/run');
 
 describe('cycleRecords', () => {
-
   test('cycle can start', () => {
     // Make sure we can start the cycle with real drivers, i.e. the drivers are configured correctly
     expect(run(cycleRecords, sampleCycleDrivers)).toBeTruthy();
