@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {apiUri} = require('./helpers/configHelpers');
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
-const { sampleCycleSourcesForDiagramTests, actions, actionConfigs, actionTypeLookup} = require('unittest/sampleActions');
+const { sampleCycleSources, actions, actionConfigs, actionTypeLookup} = require('unittest/sampleActions');
 const {cities} = require('unittest/sampleCities');
 const {cycleRecords} = require('./cycleRecords');
 const {reqPath} = require('rescape-ramda').throwing;
@@ -40,7 +40,7 @@ describe('cycleRecordsIntents', () => {
 
       ACTION_CONFIG: {
         // Get the ACTION_CONFIG stream
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSourcesForDiagramTests)
+        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
     const sinks = {
@@ -82,7 +82,7 @@ describe('cycleRecordsIntents', () => {
       },
       ACTION_CONFIG: {
         // Get the ACTION_CONFIG stream
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSourcesForDiagramTests)
+        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
     const sinks = {

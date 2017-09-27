@@ -11,7 +11,8 @@
 const R = require('ramda');
 const xs = require('xstream').default;
 const {sources} = require('./sources');
-const {Stream} = require('xstream');
+const {v} = require('rescape-validate');
+const {PropTypes} = require('prop-types');
 
 /**
  * Make any config sources that are objects into a function returning a stream, as Cycle.js expects.
@@ -44,4 +45,23 @@ module.exports.overrideSources = R.compose(
  * @returns {Object} Merged sources
  */
 module.exports.overrideSourcesWithoutStreaming = R.merge(sources);
+
+/**
+ * Merges cycle.js sources that have each have a different ACTION_CONFIG
+ * Since each ACTION_CONFIG.configByType has distinct types, we can safely merge
+ * that object together
+ * @param {[Object]} cycleSources Sources for different models, presumably each
+ * containing an ACTION_CONFIG source
+ * @returns {Object} A merged cycle.js drivers object. Only ACTION_CONFIG is merged.
+ * Other drivers are assumed identical and the right side value is taken
+ */
+module.exports.mergeCycleSources = v(cycleSources => R.reduce(
+  // This is 2-arity. It receives the reduction and current source
+  R.mergeDeepWithKey((k, l, r) => k === 'configByType' ? R.merge(l, r) : r),
+  {},
+  cycleSources
+  ),
+  [
+    ['cycleSources', PropTypes.arrayOf(PropTypes.shape()).isRequired]
+]);
 

@@ -8,9 +8,13 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {streamConfigSources, overrideSources} = require('./cycleActionHelpers');
+const {streamConfigSources, overrideSources, overrideSourcesWithoutStreaming, mergeCycleSources} = require('./cycleActionHelpers');
 const xs = require('xstream').default;
 const {makeHTTPDriver} = require('@cycle/http');
+const {actionConfig} = require('./actionCreatorHelpers');
+const {sampleCycleSources} = require('unittest/sampleActions');
+const {VERBS: {FETCH}, makeActionConfigLookup} = require('./actionHelpers');
+const {config} = require('unittest/unittestConfig');
 const R = require('ramda');
 
 describe('cycleActionHelpers', () => {
@@ -37,6 +41,35 @@ describe('cycleActionHelpers', () => {
         { ACTION_CONFIG: apple }).ACTION_CONFIG()
     ).toEqual(
       xs.of(apple)
+    );
+  });
+
+  test('mergeCycleSources', () => {
+    const ACTION_CONFIGS = [
+      actionConfig('foo', ['user'], 'bar', FETCH)
+    ];
+
+    /**
+     * cycle.js sources that process sample async actions
+     */
+    const moreCycleSources = overrideSourcesWithoutStreaming({
+      // Supply the default configuration for values such as the API location.
+      CONFIG: config,
+      // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
+      ACTION_CONFIG: {
+        configByType: makeActionConfigLookup(ACTION_CONFIGS)
+      }
+    });
+    // Make sure the action types merge
+    expect(
+      R.keys(mergeCycleSources([sampleCycleSources, moreCycleSources]).ACTION_CONFIG.configByType)
+    ).toEqual(
+      // The action keys of each source
+      R.reduce(R.concat, [],
+        R.map(sources => R.keys(sources.ACTION_CONFIG.configByType),
+          [sampleCycleSources, moreCycleSources]
+        )
+      )
     );
   });
 });

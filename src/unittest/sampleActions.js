@@ -66,10 +66,11 @@ module.exports.sampleCycleDrivers = overrideSources({
 const actionConfigLookup = makeActionConfigLookup(ACTION_CONFIGS);
 
 /**
- * cycle.js sources that process sample async actions without making streams of the constants,
- * since diagram test do this themselves with the diagram streams
+ * cycle.js sources that process sample async actions without making streams of the constants.
+ * This is used when we need to merge the sources with other before turning the configs into streams.
+ * Also used for diagram tests, since they create diagram streams
  */
-module.exports.sampleCycleSourcesForDiagramTests = overrideSourcesWithoutStreaming({
+module.exports.sampleCycleSources = overrideSourcesWithoutStreaming({
   CONFIG: config,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {

@@ -10,7 +10,7 @@
  */
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {successFailureHttpIntent} = require('./cycleRecordsHttpIntents');
-const { actions, sampleCycleSourcesForDiagramTests,
+const { actions, sampleCycleSources,
   testBodies: {
     fetchCitiesSuccessBody, fetchCitiesFailureBody
   }
@@ -34,7 +34,7 @@ describe('cycleRecordsIntents', () => {
       },
       ACTION_CONFIG: {
         // Get the ACTION_CONFIG stream
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSourcesForDiagramTests)
+        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
     const sinks = {

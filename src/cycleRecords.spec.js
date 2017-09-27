@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {
-  sampleCycleSourcesForDiagramTests, sampleCycleDrivers, actions, scopeValues, actionConfigs, MODELS: {CITIES},
+  sampleCycleSources, sampleCycleDrivers, actions, scopeValues, actionConfigs, MODELS: {CITIES},
   testBodies: {
     fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesSuccessBody, addCitiesSuccessBody
   }
@@ -49,10 +49,10 @@ describe('cycleRecords', () => {
         c: actions.fetchCitiesRequest(cities)
       },
       CONFIG: {
-        a: reqPath(['CONFIG'], sampleCycleSourcesForDiagramTests)
+        a: reqPath(['CONFIG'], sampleCycleSources)
       },
       ACTION_CONFIG: {
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSourcesForDiagramTests)
+        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
 

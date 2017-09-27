@@ -31,10 +31,7 @@ const {CYCLE_API_KEY, API_CONFIG} = require('./helpers/configHelpers');
  * @param {String} ACTION_CONFIG.actionPath 'scope/actionName' Used to name the PouchDb Design Doc
  * @param {String} ACTION_CONFIG.actionUpdateName React Action name to perform updates
  * @param {String} ACTION_CONFIG.actionFetchName React Action name to perform fetches
- * @param {Function} ACTION_CONFIG.actionFetchSuccess React Action creator for a successful fetch
- * @param {Function} ACTION_CONFIG.actionUpdateSuccess React Action creator for a successful update
- * @param {Function} ACTION_CONFIG.actionFetchFailure React Action creator for a failed fetch
- * @param {Function} ACTION_CONFIG.actionUpdateFailure React Action creator for a failed update
+ * @param {Object} ACTION_CONFIG.configByType A map of action types to actionConfigs. actionConfigs
  * @param {Stream} ACTION The React Action driver source
  * @param {Stream} HTTP The Cycle.js HTTP driver
  * @returns {Object} The cycle.js sink containing ACTION and POUCHDB sinks
