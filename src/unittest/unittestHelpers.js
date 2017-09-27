@@ -52,7 +52,7 @@ const {v} = require('rescape-validate');
 module.exports.testBodies = (actionConfigs, scopeValues, objs) =>
   // Add 'Body' to the action name so we know this is a test request/response body
   mapKeys(
-    actionName => `${actionName}Body`,
+    theActionName => `${theActionName}Body`,
     // Each iteration returns an object of three items, so merge them all
     R.mergeAll(R.map(
       // Map each actionConfig, which itself represents the three phases--REQUEST, SUCCESS, FAILURE
@@ -175,7 +175,7 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
       // so use a catch-all category name
       category: 'all'
     }
-  }
+  };
 }),
 [
   ['actionConfig', PropTypes.shape().isRequired],
@@ -192,7 +192,7 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample response body based on the actionConfig and objs
  */
-const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody,  objs) =>
+const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
   R.merge(
     requestBody, {
       status: 200,
@@ -260,7 +260,7 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
     // We process all responses in the same place for now,
     // so use a catch-all category name
     category: 'all'
-  }
+  };
 }),
 [
   ['actionConfig', PropTypes.shape().isRequired],

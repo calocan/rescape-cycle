@@ -36,10 +36,10 @@ describe('testHelpers', () => {
       'removeProjectLocationsFailureBody'
     ]);
     // Just make sure the body looks reasonable
-    expect(R.keys(R.pick(['url', 'type', 'filters', 'category'], bodies['fetchCitiesRequestBody'].request))).toEqual(
+    expect(R.keys(R.pick(['url', 'type', 'filters', 'category'], bodies.fetchCitiesRequestBody.request))).toEqual(
       ['url', 'type', 'filters', 'category']
     );
-    expect(R.keys(R.pick(['op', 'path', 'value'], bodies['addCitiesRequestBody'].query))).toEqual(
+    expect(R.keys(R.pick(['op', 'path', 'value'], bodies.addCitiesRequestBody.query))).toEqual(
       ['op', 'path', 'value']
     );
   });

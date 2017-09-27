@@ -258,8 +258,6 @@ module.exports.makeActionTypesLookup = v(actionConfigs =>
   ['actionConfigs', [Object]]
 ], 'makeActionTypesLookup');
 
-
-
 /**
  * Like makeActionTypesLookup but returns the action configs keyed by the action's type.
  * Also adds the phase into the resulting config as phase: 'REQUEST|SUCCESS|FAILURE'
