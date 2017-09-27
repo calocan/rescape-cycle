@@ -60,8 +60,8 @@ module.exports.mergeCycleSources = v(cycleSources => R.reduce(
   R.mergeDeepWithKey((k, l, r) => k === 'configByType' ? R.merge(l, r) : r),
   {},
   cycleSources
-  ),
-  [
-    ['cycleSources', PropTypes.arrayOf(PropTypes.shape()).isRequired]
+),
+[
+  ['cycleSources', PropTypes.arrayOf(PropTypes.shape()).isRequired]
 ]);
 
