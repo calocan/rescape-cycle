@@ -12,9 +12,9 @@
 const R = require('ramda');
 const {apiUri} = require('../helpers/configHelpers');
 const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
-const {actionCreatorNameForPhase, makeActionCreators, makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
+const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
-const {config} = require('test/testConfig');
+const {config} = require('unittest/unittestConfig');
 const {PropTypes} = require('prop-types');
 const {mapKeys} = require('rescape-ramda');
 const {
@@ -49,7 +49,7 @@ const {v} = require('rescape-validate');
  * }
  * @returns {Object} All test bodies as shown in the example above
  */
-const testBodies = module.exports.testBodies = (actionConfigs, scopeValues, objs) =>
+module.exports.testBodies = (actionConfigs, scopeValues, objs) =>
   // Add 'Body' to the action name so we know this is a test request/response body
   mapKeys(
     actionName => `${actionName}Body`,
@@ -68,16 +68,14 @@ const testBodies = module.exports.testBodies = (actionConfigs, scopeValues, objs
             // Pick the correct body function. Also pass the objs of the actionConfig's model to use in our
             // request/response
             R.cond([
-              [R.equals(REQUEST), R.always(sampleRequestBody(phasedActionConfig, actionCreator, objs[actionConfig.model]))],
-              [R.equals(SUCCESS), R.always(sampleResponseSuccess(phasedActionConfig, actionCreator, objs[actionConfig.model]))],
-              [R.equals(SUCCESS), R.always(sampleResponseFailure(phasedActionConfig, actionCreator, objs[actionConfig.model]))],
-              [R.equals(FAILURE),],
+              [R.equals(REQUEST), () => sampleRequestBody(phasedActionConfig, actionCreator, objs[actionConfig.model])],
+              [R.equals(SUCCESS), () => sampleResponseSuccess(phasedActionConfig, actionCreator, objs[actionConfig.model])],
+              [R.equals(FAILURE), () => sampleResponseFailure(phasedActionConfig, actionCreator, objs[actionConfig.model])],
             ])(phase);
           },
           // Creates the three actionCreators, one for each phase.
           makeActionCreatorsForConfig(actionConfig, scopeValues)
         );
-        sampleFetchRequestBody(phasedActionConfig)
       },
       actionConfigs
     )
@@ -90,13 +88,14 @@ const testBodies = module.exports.testBodies = (actionConfigs, scopeValues, objs
  * @param {Object, Array} objs Objects particular to the model of actionConfig
  * @returns {Object} A sample request body
  */
-const sampleRequestBody = (actionConfig, actionCreator, objs) =>
-  R.cond([
+const sampleRequestBody = (actionConfig, actionCreator, objs) => {
+  return R.cond([
     // Fetch
-    [R.equals(FETCH), R.always(sampleFetchRequestBody(actionConfig, actionCreator, objs))],
+    [R.equals(FETCH), () => sampleFetchRequestBody(actionConfig, actionCreator, objs)],
     // If not a fetch assume a patch
-    [R.T, R.always(samplePatchRequestBody(actionConfig, actionCreator, objs))]
+    [R.T, () => samplePatchRequestBody(actionConfig, actionCreator, objs)]
   ])(actionConfig.verb);
+};
 
 /**
  * Delegates to the proper success response body function based on the phasedActionConfig's verb (e.g. FETCH, REPLACE, etc)
@@ -108,9 +107,9 @@ const sampleRequestBody = (actionConfig, actionCreator, objs) =>
 const sampleResponseSuccess = (actionConfig, actionCreator, objs) =>
   R.cond([
     // Fetch
-    [R.equals(FETCH), R.always(sampleFetchResponseSuccess(actionConfig, actionCreator, objs))],
+    [R.equals(FETCH), () => sampleFetchResponseSuccess(actionConfig, actionCreator, objs)],
     // If not a fetch assume a patch
-    [R.T, R.always(samplePatchResponseSuccess(actionConfig, actionCreator, objs))]
+    [R.T, () => samplePatchResponseSuccess(actionConfig, actionCreator, objs)]
   ])(actionConfig.verb);
 
 
@@ -124,9 +123,9 @@ const sampleResponseSuccess = (actionConfig, actionCreator, objs) =>
 const sampleResponseFailure = (actionConfig, actionCreator, objs) =>
   R.cond([
     // Fetch
-    [R.equals(FETCH), R.always(sampleFetchResponseFailure(actionConfig, actionCreator, objs))],
+    [R.equals(FETCH), () => sampleFetchResponseFailure(actionConfig, actionCreator, objs)],
     // If not a fetch assume a patch
-    [R.T, R.always(samplePatchResponseFailure(actionConfig, actionCreator, objs))]
+    [R.T, () => samplePatchResponseFailure(actionConfig, actionCreator, objs)]
   ])(actionConfig.verb);
 
 /**
@@ -137,6 +136,9 @@ const sampleResponseFailure = (actionConfig, actionCreator, objs) =>
  * @returns {Object} The sample request body based on the actionConfig and objs
  */
 const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry((actionConfig, actionCreator, objs) => {
+  if (actionConfig.phase != REQUEST) {
+    throw new Error(`actionConfig must be REQUEST phase, instead got ${actionConfig.phase}`);
+  }
   const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
   return {
     request: {
@@ -164,7 +166,7 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
  * @returns {Object} The sample response body based on the actionConfig and objs
  */
 const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v(R.curry((actionConfig, actionCreator, objs) => R.merge(
-  sampleFetchRequestBody(actionConfig, actionCreator, objs), {
+  sampleFetchRequestBody(R.merge(actionConfig, {phase: REQUEST}), actionCreator, objs), {
     status: 200,
     data: objs
   }
@@ -182,12 +184,14 @@ const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample response error based on the actionConfig and objs
  */
-const sampleFetchResponseFailure = module.exports.sampleFetchResponseFailure = v(R.curry((actionConfig, actionCreator, objs) => R.merge(
-  sampleFetchRequestBody(actionConfig, actionCreator, objs), {
-    status: 500,
-    message: 'Internal Server Error'
-  }
-)),
+const sampleFetchResponseFailure = module.exports.sampleFetchResponseFailure = v(R.curry((actionConfig, actionCreator, objs) =>
+  R.merge(
+    sampleFetchRequestBody(R.merge(actionConfig, {phase: REQUEST}), actionCreator, objs), {
+      status: 500,
+      message: 'Internal Server Error'
+    }
+  )
+),
 [
   ['actionConfig', PropTypes.shape().isRequired],
   ['actionCreator', PropTypes.func.isRequired],

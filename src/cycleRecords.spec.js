@@ -16,7 +16,7 @@ const {
     fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesResponseSuccess, fetchCitiesResponseFailure, addCitiesResponseSuccess
   }
 } = require('test/sampleActions');
-const {cities} = require('test/testCities');
+const {cities} = require('unittest/sampleCities');
 const xs = require('xstream').default;
 const {cycleRecords} = require('./cycleRecords');
 const {reqPath} = require('rescape-ramda').throwing;

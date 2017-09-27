@@ -11,10 +11,10 @@
 const R = require('ramda');
 const {apiUri} = require('./helpers/configHelpers');
 const { actions, actionConfigs, actionTypeLookup } = require('test/sampleActions');
-const {cities} = require('test/testCities');
+const {cities} = require('unittest/sampleCities');
 const {fetchRecordHttpInterpret, updateRecordHttpInterpret} = require('./cycleRecordsHttpInterprets');
 const {API_CONFIG} = require('./helpers/configHelpers');
-const {config} = require('test/testConfig');
+const {config} = require('unittest/unittestConfig');
 const {reqPath} = require('rescape-ramda').throwing;
 
 describe('cycleRecordsHttpInterprets', () => {

@@ -9,9 +9,9 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const {ACTION_CONFIGS, MODELS, scopeValues} = require('./sampleActions');
-const {testBodies} = require('./testHelpers');
-const {cities} = require('./testCities');
-const {projectLocations} = require('./testProjectLocations');
+const {testBodies} = require('./unittestHelpers');
+const {cities} = require('./sampleCities');
+const {projectLocations} = require('./sampleProjectLocations');
 
 describe('testHelpers', () => {
   test('testBodies', () => {

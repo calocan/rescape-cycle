@@ -19,10 +19,10 @@ const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/c
 const {reqPath} = require('rescape-ramda').throwing;
 const {mapKeys} = require('rescape-ramda');
 const {makeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
-const {config} = require('test/testConfig');
-const {cities} = require('test/testCities');
-const {projectLocations} = require('test/testProjectLocations');
-const {testBodies} = require('test/testHelpers.js');
+const {config} = require('unittest/unittestConfig');
+const {cities} = require('unittest/sampleCities');
+const {projectLocations} = require('unittest/sampleProjectLocations');
+const {testBodies} = require('unittest/unittestHelpers');
 
 // Sample action root, representing a module full of related actions
 const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
