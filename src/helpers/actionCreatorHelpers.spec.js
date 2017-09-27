@@ -10,7 +10,7 @@
  */
 const R = require('ramda');
 const { VERBS, PHASES, actionType, actionName } = require('./actionHelpers');
-const {ACTION_ROOT, MODELS, ACTION_CONFIGS} = require('../test/sampleActions');
+const {ACTION_ROOT, MODELS, ACTION_CONFIGS} = require('../unittest/sampleActions');
 const { ACTION_BODIES, creator, asyncActionCreators, makeActionCreators, makeActionCreatorsForConfig, actionConfig } = require('./actionCreatorHelpers');
 const { filterWithKeys, capitalize } = require('rescape-ramda');
 
@@ -83,13 +83,13 @@ describe('actionHelpers', () => {
   test('makeActionCreatorsForConfig', () => {
     const user = {name: 'Bill'};
     const actionCreators = makeActionCreatorsForConfig(
-      {scope: ['user'], root: ACTION_ROOT, model: MODELS.BLOCKNAMES, verb: VERBS.FETCH, ret: ACTION_BODIES},
+      {scope: ['user'], root: ACTION_ROOT, model: MODELS.PROJECT_LOCATIONS, verb: VERBS.FETCH, ret: ACTION_BODIES},
       {user}
     );
 
     // Should have the user in the scope
     expect(
-      actionCreators.fetchBlocknamesRequest({}).user
+      actionCreators.fetchProjectLocationsRequest({}).user
     ).toEqual(
       user
     );
@@ -116,7 +116,7 @@ describe('actionHelpers', () => {
     );
     // Some should have the project in the scope
     expect(
-      actionCreators.fetchProjectProfilesRequest({foo: {}}).foo.project
+      actionCreators.removeProjectLocationsRequest({foo: {}}).foo.project
     ).toEqual(
       project
     );

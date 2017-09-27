@@ -11,6 +11,7 @@
 const {ACTION_CONFIGS, MODELS, scopeValues} = require('./sampleActions');
 const {testBodies} = require('./unittestHelpers');
 const {cities} = require('./sampleCities');
+const R = require('ramda');
 const {projectLocations} = require('./sampleProjectLocations');
 
 describe('testHelpers', () => {
@@ -20,23 +21,26 @@ describe('testHelpers', () => {
       scopeValues,
       {[MODELS.CITIES]: cities, [MODELS.PROJECT_LOCATIONS]: projectLocations}
     );
-    expect(R.keys(bodies)).toEqual(
-      'fetchCitiesRequest',
-      'fetchCitiesSuccess',
-      'fetchCitiesFailure',
-      'addCitiesRequest',
-      'addCitiesSuccess',
-      'addCitiesFailure',
-      'addProjectLocationsRequest',
-      'addProjectLocationsSuccess',
-      'addProjectLocationsFailure',
-      'removeProjectLocationsRequest',
-      'removeProjectLocationsSuccess',
-      'removeProjectLocationsFailure'
-    );
+    expect(R.keys(bodies)).toEqual([
+      'fetchCitiesRequestBody',
+      'fetchCitiesSuccessBody',
+      'fetchCitiesFailureBody',
+      'addCitiesRequestBody',
+      'addCitiesSuccessBody',
+      'addCitiesFailureBody',
+      'addProjectLocationsRequestBody',
+      'addProjectLocationsSuccessBody',
+      'addProjectLocationsFailureBody',
+      'removeProjectLocationsRequestBody',
+      'removeProjectLocationsSuccessBody',
+      'removeProjectLocationsFailureBody'
+    ]);
     // Just make sure the body looks reasonable
-    expect(R.keys(R.pick(['url', 'type', 'filter', 'category'], bodies['fetchCitiesRequest'].request))).toEqual(
-      ['url', 'type', 'filter', 'category']
+    expect(R.keys(R.pick(['url', 'type', 'filters', 'category'], bodies['fetchCitiesRequestBody'].request))).toEqual(
+      ['url', 'type', 'filters', 'category']
+    );
+    expect(R.keys(R.pick(['op', 'path', 'value'], bodies['addCitiesRequestBody'].query))).toEqual(
+      ['op', 'path', 'value']
     );
   });
 });

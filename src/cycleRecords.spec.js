@@ -13,9 +13,9 @@ const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {
   sampleCycleSourcesForDiagramTests, actions, scopeValues, actionConfigs, MODELS: {CITIES},
   testBodies: {
-    fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesResponseSuccess, fetchCitiesResponseFailure, addCitiesResponseSuccess
+    fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesSuccessBody, addCitiesSuccessBody
   }
-} = require('test/sampleActions');
+} = require('unittest/sampleActions');
 const {cities} = require('unittest/sampleCities');
 const xs = require('xstream').default;
 const {cycleRecords} = require('./cycleRecords');
@@ -31,13 +31,13 @@ describe('cycleRecords', () => {
       HTTP: {
         // We ignore the argument to select, the category, since we only have one category
         select: () => ({
-          g: xs.of(addCitiesResponseSuccess),
-          h: xs.of(fetchCitiesResponseSuccess)
+          g: xs.of(addCitiesSuccessBody),
+          h: xs.of(fetchCitiesSuccessBody)
         })
       },
       ACTION: {
         // User intends to store cities. Omit ids to simulate an add
-        a: actions.addCitiesRequest(R.values(R.omit(['id'], cities))),
+        a: actions.addCitiesRequest(R.values(R.map(R.omit(['id']), cities))),
 
         // User intents to fetch cities
         c: actions.fetchCitiesRequest(cities)

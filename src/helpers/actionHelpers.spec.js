@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {asyncActions, asyncActionsPhaseKeys, makeActionTypesLookup, makeActionConfigLookup, resolveActionConfig}  = require('./actionHelpers');
 const {capitalize} = require('rescape-ramda');
-const {ACTION_ROOT, MODELS, ACTION_CONFIGS, actionConfigs} = require('../test/sampleActions');
+const {ACTION_ROOT, MODELS, ACTION_CONFIGS, actionConfigs} = require('../unittest/sampleActions');
 const {VERBS, PHASES} = require('./actionHelpers');
 const {FETCH} = VERBS;
 const {REQUEST, SUCCESS, FAILURE} = PHASES;
@@ -39,13 +39,13 @@ describe('actionHelpers', () => {
 
   test('makeActionTypesLookup', () => {
     expect(makeActionTypesLookup([
-        {scope: {}, root: ACTION_ROOT, model: MODELS.BLOCKNAMES, verb: FETCH},
+        {scope: {}, root: ACTION_ROOT, model: MODELS.PROJECT_LOCATIONS, verb: FETCH},
         {scope: {}, root: ACTION_ROOT, model: MODELS.CITIES, verb: FETCH}
       ])
     ).toEqual({
-      [`${R.toLower(FETCH)}${capitalize(MODELS.BLOCKNAMES)}Request`]: `${ACTION_ROOT}/${MODELS.BLOCKNAMES}/${FETCH}_REQUEST`,
-      [`${R.toLower(FETCH)}${capitalize(MODELS.BLOCKNAMES)}Success`]: `${ACTION_ROOT}/${MODELS.BLOCKNAMES}/${FETCH}_SUCCESS`,
-      [`${R.toLower(FETCH)}${capitalize(MODELS.BLOCKNAMES)}Failure`]: `${ACTION_ROOT}/${MODELS.BLOCKNAMES}/${FETCH}_FAILURE`,
+      [`${R.toLower(FETCH)}${capitalize(MODELS.PROJECT_LOCATIONS)}Request`]: `${ACTION_ROOT}/${MODELS.PROJECT_LOCATIONS}/${FETCH}_REQUEST`,
+      [`${R.toLower(FETCH)}${capitalize(MODELS.PROJECT_LOCATIONS)}Success`]: `${ACTION_ROOT}/${MODELS.PROJECT_LOCATIONS}/${FETCH}_SUCCESS`,
+      [`${R.toLower(FETCH)}${capitalize(MODELS.PROJECT_LOCATIONS)}Failure`]: `${ACTION_ROOT}/${MODELS.PROJECT_LOCATIONS}/${FETCH}_FAILURE`,
       [`${R.toLower(FETCH)}${capitalize(MODELS.CITIES)}Request`]: `${ACTION_ROOT}/${MODELS.CITIES}/${FETCH}_REQUEST`,
       [`${R.toLower(FETCH)}${capitalize(MODELS.CITIES)}Success`]: `${ACTION_ROOT}/${MODELS.CITIES}/${FETCH}_SUCCESS`,
       [`${R.toLower(FETCH)}${capitalize(MODELS.CITIES)}Failure`]: `${ACTION_ROOT}/${MODELS.CITIES}/${FETCH}_FAILURE`
@@ -54,28 +54,28 @@ describe('actionHelpers', () => {
 
   test('makeActionWithinConfigs', () => {
     expect(makeActionConfigLookup([
-        {scope: {}, root: ACTION_ROOT, model: MODELS.BLOCKNAMES, verb: FETCH},
+        {scope: {}, root: ACTION_ROOT, model: MODELS.PROJECT_LOCATIONS, verb: FETCH},
         {scope: {}, root: ACTION_ROOT, model: MODELS.CITIES, verb: FETCH}
       ])
     ).toEqual({
-      [`${ACTION_ROOT}/${MODELS.BLOCKNAMES}/${FETCH}_REQUEST`]: {
+      [`${ACTION_ROOT}/${MODELS.PROJECT_LOCATIONS}/${FETCH}_REQUEST`]: {
         scope: {},
         root: ACTION_ROOT,
-        model: MODELS.BLOCKNAMES,
+        model: MODELS.PROJECT_LOCATIONS,
         verb: FETCH,
         phase: REQUEST
       },
-      [`${ACTION_ROOT}/${MODELS.BLOCKNAMES}/${FETCH}_SUCCESS`]: {
+      [`${ACTION_ROOT}/${MODELS.PROJECT_LOCATIONS}/${FETCH}_SUCCESS`]: {
         scope: {},
         root: ACTION_ROOT,
-        model: MODELS.BLOCKNAMES,
+        model: MODELS.PROJECT_LOCATIONS,
         verb: FETCH,
         phase: SUCCESS
       },
-      [`${ACTION_ROOT}/${MODELS.BLOCKNAMES}/${FETCH}_FAILURE`]: {
+      [`${ACTION_ROOT}/${MODELS.PROJECT_LOCATIONS}/${FETCH}_FAILURE`]: {
         scope: {},
         root: ACTION_ROOT,
-        model: MODELS.BLOCKNAMES,
+        model: MODELS.PROJECT_LOCATIONS,
         verb: FETCH,
         phase: FAILURE
       },

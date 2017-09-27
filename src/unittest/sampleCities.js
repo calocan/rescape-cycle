@@ -10,6 +10,6 @@
  */
 
 module.exports.cities = {
-  1: {id: 1, city: 'Alexandria', state: 'VA'},
-  2: {id: 2, city: 'Brooklyn', state: 'NY'}
+  123: {id: 123, city: 'Alexandria', state: 'VA'},
+  234: {id: 234, city: 'Brooklyn', state: 'NY'}
 };

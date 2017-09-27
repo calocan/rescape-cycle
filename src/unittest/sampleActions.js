@@ -16,8 +16,7 @@ const {VERBS, PHASES, makeActionConfigLookup, makeActionTypesLookup, resolveActi
 const R = require('ramda');
 const {REPLACE, FETCH, ADD, REMOVE} = VERBS;
 const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/cycleActionHelpers');
-const {reqPath} = require('rescape-ramda').throwing;
-const {mapKeys} = require('rescape-ramda');
+const {camelCase} = require('rescape-ramda');
 const {makeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
 const {config} = require('unittest/unittestConfig');
 const {cities} = require('unittest/sampleCities');
@@ -29,7 +28,7 @@ const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
 
 // The various action keys that define something being modeled
 // Models are various manifestations of the locations
-const M = module.exports.MODELS = R.mapObjIndexed((v, k) => R.toLower(k), {
+const M = module.exports.MODELS = R.mapObjIndexed((v, k) => camelCase(R.toLower(k)), {
   CITIES: '',
   PROJECT_LOCATIONS: ''
 });

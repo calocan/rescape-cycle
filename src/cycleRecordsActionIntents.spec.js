@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {apiUri} = require('./helpers/configHelpers');
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
-const { sampleCycleSourcesForDiagramTests, actions, actionConfigs, actionTypeLookup} = require('test/sampleActions');
+const { sampleCycleSourcesForDiagramTests, actions, actionConfigs, actionTypeLookup} = require('unittest/sampleActions');
 const {cities} = require('unittest/sampleCities');
 const {cycleRecords} = require('./cycleRecords');
 const {reqPath} = require('rescape-ramda').throwing;

@@ -10,7 +10,7 @@
  */
 const R = require('ramda');
 const {apiUri} = require('./helpers/configHelpers');
-const { actions, actionConfigs, actionTypeLookup } = require('test/sampleActions');
+const { actions, actionConfigs, actionTypeLookup } = require('unittest/sampleActions');
 const {cities} = require('unittest/sampleCities');
 const {fetchRecordHttpInterpret, updateRecordHttpInterpret} = require('./cycleRecordsHttpInterprets');
 const {API_CONFIG} = require('./helpers/configHelpers');

@@ -16,5 +16,6 @@ module.exports = R.mergeAll([
   require('./helpers/actionHelpers'),
   require('./helpers/actionCreatorHelpers'),
   require('./helpers/cycleActionHelpers'),
-  require('./helpers/jestCycleHelpers')
+  require('./helpers/jestCycleHelpers'),
+  require('./unittest/unittestHelpers')
 ]);

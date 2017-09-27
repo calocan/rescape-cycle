@@ -10,6 +10,6 @@
  */
 
 module.exports.projectLocations = {
-  1: {id: 1, name: 'Golden Tee', city: 'Castro Valley', state: 'CA'},
-  2: {id: 2, name: 'Hells Gate', city: 'Boston Bar', province: 'BC'}
+  123: {id: 123, name: 'Golden Tee', city: 'Castro Valley', state: 'CA'},
+  234: {id: 234, name: 'Hells Gate', city: 'Boston Bar', province: 'BC'}
 };

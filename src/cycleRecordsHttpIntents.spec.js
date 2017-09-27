@@ -10,11 +10,11 @@
  */
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {successFailureHttpIntent} = require('./cycleRecordsHttpIntents');
-const { actions,
+const { actions, sampleCycleSourcesForDiagramTests,
   testBodies: {
-    fetchCitiesResponseSuccess, fetchCitiesResponseFailure
+    fetchCitiesSuccessBody, fetchCitiesFailureBody
   }
-} = require('test/sampleActions');
+} = require('unittest/sampleActions');
 const {cities} = require('unittest/sampleCities');
 const xs = require('xstream').default;
 const {reqPath} = require('rescape-ramda').throwing;
@@ -28,8 +28,8 @@ describe('cycleRecordsIntents', () => {
       HTTP: {
         // We ignore the argument to select, the category, since we only have one category
         select: () => ({
-          g: xs.of(fetchCitiesResponseSuccess),
-          h: xs.of(fetchCitiesResponseFailure)
+          g: xs.of(fetchCitiesSuccessBody),
+          h: xs.of(fetchCitiesFailureBody)
         })
       },
       ACTION_CONFIG: {
@@ -45,7 +45,7 @@ describe('cycleRecordsIntents', () => {
         s: actions.fetchCitiesSuccess({data: cities}),
 
         // User intents to fetch cities
-        t: actions.fetchCitiesFailure(fetchCitiesResponseFailure)
+        t: actions.fetchCitiesFailure(fetchCitiesFailureBody)
       }
     };
     // Wrap the method to make it match a cycle call so we can use assertSourceSinks
