@@ -14,7 +14,7 @@ const {apiUri} = require('../helpers/configHelpers');
 const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
 const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
-const {config} = require('unittest/unittestConfig');
+const {config} = require('./unittestConfig');
 const {PropTypes} = require('prop-types');
 const {mapKeys} = require('rescape-ramda');
 const {
