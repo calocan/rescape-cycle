@@ -12,9 +12,9 @@
  * Sample actions fro testing
  */
 
-const {VERBS, PHASES, makeActionConfigLookup, makeActionTypesLookup, resolveActionConfig} = require('../helpers/actionHelpers');
+const {VERBS, makeActionConfigLookup, makeActionTypesLookup, resolveActionConfig} = require('../helpers/actionHelpers');
 const R = require('ramda');
-const {REPLACE, FETCH, ADD, REMOVE} = VERBS;
+const {FETCH, ADD, REMOVE} = VERBS;
 const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/cycleActionHelpers');
 const {camelCase} = require('rescape-ramda');
 const {makeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
@@ -22,6 +22,7 @@ const {config} = require('unittest/unittestConfig');
 const {cities} = require('unittest/sampleCities');
 const {projectLocations} = require('unittest/sampleProjectLocations');
 const {testBodies} = require('unittest/unittestHelpers');
+const {cycleRecords} = require('../cycleRecords');
 
 // Sample action root, representing a module full of related actions
 const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
@@ -48,13 +49,15 @@ const ACTION_CONFIGS = module.exports.ACTION_CONFIGS = [
 /**
  * cycle.js sources that process sample async actions
  */
-module.exports.sampleCycleSources = overrideSources({
+module.exports.sampleCycleDrivers = overrideSources({
+  // Supply the default configuration for values such as the API location.
   CONFIG: config,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {
     configByType: makeActionConfigLookup(ACTION_CONFIGS)
   }
 });
+
 
 /**
  * Get the actionConfigLookup so we can generate expected results
@@ -66,13 +69,14 @@ const actionConfigLookup = makeActionConfigLookup(ACTION_CONFIGS);
  * cycle.js sources that process sample async actions without making streams of the constants,
  * since diagram test do this themselves with the diagram streams
  */
-const sampleCycleSourcesForDiagramTests = module.exports.sampleCycleSourcesForDiagramTests = overrideSourcesWithoutStreaming({
+module.exports.sampleCycleSourcesForDiagramTests = overrideSourcesWithoutStreaming({
   CONFIG: config,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {
     configByType: actionConfigLookup
   }
 });
+
 
 /**
  * A Sample scope for testing actions. The scope is merged into action bodies for
@@ -94,7 +98,7 @@ const actionTypeLookup = module.exports.actionTypeLookup = makeActionTypesLookup
  * Map action names to action configs
  * @returns {Object} keyed by action name and valued by action config
  */
-const actionConfigs = module.exports.actionConfigs = R.map(type => actionConfigLookup[type], actionTypeLookup);
+module.exports.actionConfigs = R.map(type => actionConfigLookup[type], actionTypeLookup);
 
 /**
  * The actionCreators that produce the action bodies

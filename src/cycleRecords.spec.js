@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {
-  sampleCycleSourcesForDiagramTests, actions, scopeValues, actionConfigs, MODELS: {CITIES},
+  sampleCycleSourcesForDiagramTests, sampleCycleDrivers, actions, scopeValues, actionConfigs, MODELS: {CITIES},
   testBodies: {
     fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesSuccessBody, addCitiesSuccessBody
   }
@@ -21,8 +21,15 @@ const xs = require('xstream').default;
 const {cycleRecords} = require('./cycleRecords');
 const {reqPath} = require('rescape-ramda').throwing;
 const {VERBS: {FETCH, ADD}, PHASES, resolveActionConfig} = require('helpers/actionHelpers');
+const {run} = require('@cycle/run');
 
 describe('cycleRecords', () => {
+
+  test('cycle can start', () => {
+    // Make sure we can start the cycle with real drivers, i.e. the drivers are configured correctly
+    expect(run(cycleRecords, sampleCycleDrivers)).toBeTruthy();
+  });
+
   test('add and fetch', (done) => {
     // Override the async and config drivers for testing
     const testSources = {

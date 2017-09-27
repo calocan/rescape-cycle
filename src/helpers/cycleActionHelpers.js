@@ -11,13 +11,17 @@
 const R = require('ramda');
 const xs = require('xstream').default;
 const {sources} = require('./sources');
+const {Stream} = require('xstream');
 
 /**
- * Make any config sources into streams, as Cycle.js expects
+ * Make any config sources that are objects into a function returning a stream, as Cycle.js expects.
+ * This is used for configuration objects that are not real drivers
  * @param {Object} sources Cycle.js sources
  * @returns {Object} Cycle.js sources with any configuration objects turned into streams
  */
-const streamConfigSources = module.exports.streamConfigSources = R.map(R.when(R.is(Object), xs.of));
+const streamConfigSources = module.exports.streamConfigSources = R.map(
+  R.when(R.complement(R.is(Function)), source => () => xs.of(source))
+);
 
 /**
  * Overrides the config sources with sources for particular Redux actions.

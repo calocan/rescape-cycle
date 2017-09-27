@@ -10,15 +10,33 @@
  */
 const {streamConfigSources, overrideSources} = require('./cycleActionHelpers');
 const xs = require('xstream').default;
+const {makeHTTPDriver} = require('@cycle/http');
+const R = require('ramda');
 
 describe('cycleActionHelpers', () => {
+  const apple = 'apple';
   test('streamConfigSources', () => {
-    expect(streamConfigSources({ ACTION_CONFIG: {} }))
-      .toEqual({ACTION_CONFIG: xs.of({})});
+    expect(R.mapObjIndexed(
+      // For equality testing, expose the underlying xs.of(apple) and the keys of the HTTP Driver
+      (source, key) => key === 'ACTION_CONFIG' ? source() : R.keys(source),
+      streamConfigSources(
+        { ACTION_CONFIG: apple,
+          HTTP: makeHTTPDriver() }
+      )
+    )).toEqual(
+      { ACTION_CONFIG: xs.of(apple),
+        HTTP: R.keys(makeHTTPDriver())
+      }
+    );
   });
+
   test('overrideSources', () => {
     // Make sure our ACTION_CONFIG overrides the default and makes it a stream
-    expect(overrideSources({ ACTION_CONFIG: {} }).ACTION_CONFIG)
-      .toEqual(xs.of({}));
+    expect(
+      overrideSources(
+        { ACTION_CONFIG: apple })['ACTION_CONFIG']()
+    ).toEqual(
+      xs.of(apple)
+    );
   });
 });
