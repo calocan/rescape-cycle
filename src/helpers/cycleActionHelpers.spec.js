@@ -15,7 +15,9 @@ const {actionConfig} = require('./actionCreatorHelpers');
 const {sampleCycleSources} = require('unittest/sampleActions');
 const {VERBS: {FETCH}, makeActionConfigLookup} = require('./actionHelpers');
 const {config} = require('unittest/unittestConfig');
+const {cycleRecords} = require('cycleRecords');
 const R = require('ramda');
+const {run} = require('@cycle/run');
 
 describe('cycleActionHelpers', () => {
   const apple = 'apple';
@@ -61,15 +63,26 @@ describe('cycleActionHelpers', () => {
       }
     });
     // Make sure the action types merge
+    const sources = [sampleCycleSources, moreCycleSources];
     expect(
-      R.keys(mergeCycleSources([sampleCycleSources, moreCycleSources]).ACTION_CONFIG.configByType)
+      R.keys(mergeCycleSources(sources).ACTION_CONFIG.configByType)
     ).toEqual(
       // The action keys of each source
       R.reduce(R.concat, [],
-        R.map(sources => R.keys(sources.ACTION_CONFIG.configByType),
-          [sampleCycleSources, moreCycleSources]
+        R.map(({ACTION_CONFIG}) => R.keys(ACTION_CONFIG.configByType),
+          sources
         )
       )
     );
+
+    // Make sure we can run once we convert the sources to drivers
+    expect(
+      run(
+        cycleRecords,
+        streamConfigSources(
+          mergeCycleSources(sources)
+        )
+      )
+    ).toBeTruthy();
   });
 });

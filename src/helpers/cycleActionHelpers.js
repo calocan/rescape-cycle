@@ -63,5 +63,5 @@ module.exports.mergeCycleSources = v(cycleSources => R.reduce(
 ),
 [
   ['cycleSources', PropTypes.arrayOf(PropTypes.shape()).isRequired]
-]);
+], 'mergeCycleSources');
 

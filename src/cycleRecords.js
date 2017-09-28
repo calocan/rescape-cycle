@@ -13,7 +13,7 @@ const {fetchRecordActionIntent, updateRecordActionIntent} = require('./cycleReco
 const {successFailureHttpIntent} = require('./cycleRecordsHttpIntents');
 const {fetchRecordHttpInterpret, updateRecordHttpInterpret} = require('./cycleRecordsHttpInterprets');
 const {mapDefault} = require('rescape-ramda');
-const {xs, Stream} = mapDefault('xs', require('xstream'));
+const {xs} = mapDefault('xs', require('xstream'));
 const {
   VERBS: {FETCH},
   PATCH_VERBS
@@ -31,7 +31,7 @@ const {CYCLE_API_KEY, API_CONFIG} = require('./helpers/configHelpers');
  * @param {String} ACTION_CONFIG.actionPath 'scope/actionName' Used to name the PouchDb Design Doc
  * @param {String} ACTION_CONFIG.actionUpdateName React Action name to perform updates
  * @param {String} ACTION_CONFIG.actionFetchName React Action name to perform fetches
- * @param {Object} ACTION_CONFIG.configByType A map of action types to actionConfigs. actionConfigs
+ * @param {Object} ACTION_CONFIG.configByType A map of action types to actionConfigs. actoinConf
  * @param {Stream} ACTION The React Action driver source
  * @param {Stream} HTTP The Cycle.js HTTP driver
  * @returns {Object} The cycle.js sink containing ACTION and POUCHDB sinks
@@ -79,9 +79,9 @@ module.exports.cycleRecords = v(({CONFIG, ACTION_CONFIG, ACTION, HTTP}) => {
 },
   [
     ['arg1', PropTypes.shape({
-      CONFIG: PropTypes.instanceOf(Stream).isRequired,
-      ACTION_CONFIG: PropTypes.instanceOf(Stream).isRequired,
-      ACTION: PropTypes.instanceOf(Stream).isRequired,
+      CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+      ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+      ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
       HTTP: PropTypes.object.isRequired
     }).isRequired]
   ], 'cycleRecords');
