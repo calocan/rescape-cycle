@@ -37,7 +37,7 @@ module.exports.successFailureHttpIntent = v(({ACTION_CONFIG, HTTP}) => {
   // .debug(actionBody => console.log(`Success/Failure act with action body ${prettyPrint(actionBody)}`));
 }, [
   ['arg1', PropTypes.shape({
-    ACTION_CONFIG: PropTypes.instanceOf(Stream).isRequired,
+    ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
     HTTP: PropTypes.object.isRequired
   }).isRequired]
 ], 'successFailureHttpIntent');

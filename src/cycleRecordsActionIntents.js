@@ -10,7 +10,7 @@
  */
 const R = require('ramda');
 const {mapDefault} = require('rescape-ramda');
-const {xs, Stream} = mapDefault('xs', require('xstream'));
+const {xs} = mapDefault('xs', require('xstream'));
 const {
   VERBS: {FETCH, ADD, REMOVE, REPLACE, SELECT, DESELECT, MOVE, COPY},
   PHASES: {REQUEST, SUCCESS, FAILURE},
@@ -49,8 +49,8 @@ const actionFilter = v(({ACTION_CONFIG, ACTION}, predicates) =>
       // })
   , [
     ['arg1', PropTypes.shape({
-      ACTION_CONFIG: PropTypes.instanceOf(Stream).isRequired,
-      ACTION: PropTypes.instanceOf(Stream).isRequired
+      ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+      ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
     }).isRequired],
     ['predicates', PropTypes.arrayOf(PropTypes.func).isRequired]
   ], 'actionFilter');
@@ -83,8 +83,8 @@ module.exports.fetchRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
   },
 [
   ['arg1', PropTypes.shape({
-    ACTION_CONFIG: PropTypes.instanceOf(Stream).isRequired,
-    ACTION: PropTypes.instanceOf(Stream).isRequired
+    ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+    ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
   }).isRequired]
 ], 'fetchRecordActionIntent');
 
@@ -114,8 +114,8 @@ module.exports.updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
       // .debug(act => console.log(`Update records intent ${prettyFormat(act)}`))
 , [
   ['arg1', PropTypes.shape({
-    ACTION_CONFIG: PropTypes.instanceOf(Stream).isRequired,
-    ACTION: PropTypes.instanceOf(Stream).isRequired
+    ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+    ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
   }).isRequired]
 ], 'updateRecordActionIntent');
 
@@ -146,8 +146,8 @@ module.exports.selectRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
     // .debug(intent => console.log(`Fetch records intent ${intent}`))
 , [
   ['arg1', PropTypes.shape({
-    ACTION_CONFIG: PropTypes.instanceOf(Stream).isRequired,
-    ACTION: PropTypes.instanceOf(Stream).isRequired
+    ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+    ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
   }).isRequired]
 ], 'selectRecordActionIntent');
 
