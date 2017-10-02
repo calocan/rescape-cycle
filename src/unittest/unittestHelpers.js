@@ -14,7 +14,7 @@ const {apiUri} = require('../helpers/configHelpers');
 const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
 const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
-const {config} = require('./unittestConfig');
+const {sampleConfig} = require('./sampleConfig');
 const {PropTypes} = require('prop-types');
 const {mapKeys} = require('rescape-ramda');
 const {
@@ -36,6 +36,8 @@ const {v} = require('rescape-validate');
  *  replaceLocationSuccessBody: { sample replace location PATCH success response body }
  *  replaceLocationFailureBody: { sample replace location PATCH success response failure body }
  * }
+ * @param {Object} config A minimal config object, needed for API values such as domain, even though
+ * no actual requests are made.
  * @param {[Object]} actionConfigs ActionConfigs without the phase key. See actionCreatorHelpers for format
  * @param {Object} scopeValues Object of values that the actions expects, e.g. {user: 123, project: 456}.
  * Different actionCreators might use one or more of the scope values. Just make sure all needed values are in
@@ -49,7 +51,7 @@ const {v} = require('rescape-validate');
  * }
  * @returns {Object} All test bodies as shown in the example above
  */
-module.exports.testBodies = (actionConfigs, scopeValues, objs) =>
+module.exports.testBodies = v((config, actionConfigs, scopeValues, objs) =>
   // Add 'Body' to the action name so we know this is a test request/response body
   mapKeys(
     theActionName => `${theActionName}Body`,
@@ -89,7 +91,13 @@ module.exports.testBodies = (actionConfigs, scopeValues, objs) =>
       },
       actionConfigs
     ))
-);
+),
+[
+  ['config', PropTypes.shape().isRequired],
+  ['actionConfigs', PropTypes.array.isRequired],
+  ['scopeValues', PropTypes.shape().isRequired],
+  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+], 'testBodies');
 
 /**
  * Delegates to the property request body function based on the phasedActionConfig's verb (e.g. FETCH, REPLACE, etc)
@@ -168,7 +176,7 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
   const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
   return {
     request: {
-      url: `${apiUri(reqPath(['settings', 'api'], config))}/${actionConfig.model}`,
+      url: `${apiUri(reqPath(['settings', 'api'], sampleConfig))}/${actionConfig.model}`,
       type: actionTypeLookup[REQUEST],
       filters: R.omit(['type'], actionCreator(objs)),
       // We process all responses in the same place for now,
@@ -242,7 +250,7 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
   return {
     // PATCH calls don't have a URL path, since the path is in the standarized
     // JSON query
-    url: apiUri(reqPath(['settings', 'api'], config)),
+    url: apiUri(reqPath(['settings', 'api'], sampleConfig)),
     method: 'PATCH',
     type: actionTypeLookup[REQUEST],
     query: {

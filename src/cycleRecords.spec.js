@@ -11,7 +11,7 @@
 const R = require('ramda');
 const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
 const {
-  sampleCycleSources, sampleCycleDrivers, actions, scopeValues, actionConfigs, MODELS: {CITIES},
+  sampleCycleSources, sampleCycleDrivers, actions,
   testBodies: {
     fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesSuccessBody, addCitiesSuccessBody
   }
@@ -20,7 +20,6 @@ const {cities} = require('unittest/sampleCities');
 const xs = require('xstream').default;
 const {cycleRecords} = require('./cycleRecords');
 const {reqPath} = require('rescape-ramda').throwing;
-const {VERBS: {FETCH, ADD}, PHASES, resolveActionConfig} = require('helpers/actionHelpers');
 const {run} = require('@cycle/run');
 
 describe('cycleRecords', () => {

@@ -13,10 +13,12 @@ const {testBodies} = require('./unittestHelpers');
 const {cities} = require('./sampleCities');
 const R = require('ramda');
 const {projectLocations} = require('./sampleProjectLocations');
+const {sampleConfig} = require('./sampleConfig');
 
 describe('testHelpers', () => {
   test('testBodies', () => {
     const bodies = testBodies(
+      sampleConfig,
       ACTION_CONFIGS,
       scopeValues,
       {[MODELS.CITIES]: cities, [MODELS.PROJECT_LOCATIONS]: projectLocations}

@@ -14,7 +14,7 @@ const { actions, actionConfigs, actionTypeLookup } = require('unittest/sampleAct
 const {cities} = require('unittest/sampleCities');
 const {fetchRecordHttpInterpret, updateRecordHttpInterpret} = require('./cycleRecordsHttpInterprets');
 const {API_CONFIG} = require('./helpers/configHelpers');
-const {config} = require('unittest/unittestConfig');
+const {sampleConfig} = require('unittest/sampleConfig');
 const {reqPath} = require('rescape-ramda').throwing;
 
 describe('cycleRecordsHttpInterprets', () => {
@@ -29,7 +29,7 @@ describe('cycleRecordsHttpInterprets', () => {
       // Pass all action keys except for type
       filters: R.omit(['type'], actions.fetchCitiesRequest(R.values(cities)))
     };
-    const apiConfig = reqPath(API_CONFIG, config);
+    const apiConfig = reqPath(API_CONFIG, sampleConfig);
     expect(fetchRecordHttpInterpret({
       apiConfig: apiConfig,
       act: fetchCitiesAct
@@ -56,7 +56,7 @@ describe('cycleRecordsHttpInterprets', () => {
       // Pass all action keys except for type
       value: R.omit(['type'], actions.addCitiesRequest(R.values(cities)))
     };
-    const apiConfig = reqPath(API_CONFIG, config);
+    const apiConfig = reqPath(API_CONFIG, sampleConfig);
     expect(updateRecordHttpInterpret({
       apiConfig: apiConfig,
       act: addCitiesAct

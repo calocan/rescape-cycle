@@ -14,7 +14,7 @@ const {makeHTTPDriver} = require('@cycle/http');
 const {actionConfig} = require('./actionCreatorHelpers');
 const {sampleCycleSources} = require('unittest/sampleActions');
 const {VERBS: {FETCH}, makeActionConfigLookup} = require('./actionHelpers');
-const {config} = require('unittest/unittestConfig');
+const {sampleConfig} = require('unittest/sampleConfig');
 const {cycleRecords} = require('cycleRecords');
 const R = require('ramda');
 const {run} = require('@cycle/run');
@@ -56,7 +56,7 @@ describe('cycleActionHelpers', () => {
      */
     const moreCycleSources = overrideSourcesWithoutStreaming({
       // Supply the default configuration for values such as the API location.
-      CONFIG: config,
+      CONFIG: sampleConfig,
       // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
       ACTION_CONFIG: {
         configByType: makeActionConfigLookup(ACTION_CONFIGS)

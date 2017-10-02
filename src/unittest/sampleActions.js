@@ -12,13 +12,13 @@
  * Sample actions fro testing
  */
 
-const {VERBS, makeActionConfigLookup, makeActionTypesLookup, resolveActionConfig} = require('../helpers/actionHelpers');
+const {VERBS, makeActionConfigLookup, makeActionTypesLookup} = require('../helpers/actionHelpers');
 const R = require('ramda');
 const {FETCH, ADD, REMOVE} = VERBS;
 const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/cycleActionHelpers');
 const {camelCase} = require('rescape-ramda');
 const {makeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
-const {config} = require('unittest/unittestConfig');
+const {sampleConfig} = require('./sampleConfig');
 const {cities} = require('unittest/sampleCities');
 const {projectLocations} = require('unittest/sampleProjectLocations');
 const {testBodies} = require('unittest/unittestHelpers');
@@ -29,7 +29,7 @@ const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
 
 // The various action keys that define something being modeled
 // Models are various manifestations of the locations
-const M = module.exports.MODELS = R.mapObjIndexed((v, k) => camelCase(R.toLower(k)), {
+const {CITIES, PROJECT_LOCATIONS} = module.exports.MODELS = R.mapObjIndexed((v, k) => camelCase(R.toLower(k)), {
   CITIES: '',
   PROJECT_LOCATIONS: ''
 });
@@ -40,10 +40,10 @@ const rootedConfig = actionConfig(ACTION_ROOT);
 const userConfig = rootedConfig(scope);
 const projectConfig = rootedConfig(projectScope);
 const ACTION_CONFIGS = module.exports.ACTION_CONFIGS = [
-  userConfig(M.CITIES, FETCH),
-  userConfig(M.CITIES, ADD),
-  projectConfig(M.PROJECT_LOCATIONS, ADD),
-  projectConfig(M.PROJECT_LOCATIONS, REMOVE)
+  userConfig(CITIES, FETCH),
+  userConfig(CITIES, ADD),
+  projectConfig(PROJECT_LOCATIONS, ADD),
+  projectConfig(PROJECT_LOCATIONS, REMOVE)
 ];
 
 /**
@@ -51,7 +51,7 @@ const ACTION_CONFIGS = module.exports.ACTION_CONFIGS = [
  */
 module.exports.sampleCycleDrivers = overrideSources({
   // Supply the default configuration for values such as the API location.
-  CONFIG: config,
+  CONFIG: sampleConfig,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {
     configByType: makeActionConfigLookup(ACTION_CONFIGS)
@@ -68,10 +68,10 @@ const actionConfigLookup = makeActionConfigLookup(ACTION_CONFIGS);
 /**
  * cycle.js sources that process sample async actions without making streams of the constants.
  * This is used when we need to merge the sources with other before turning the configs into streams.
- * Also used for diagram tests, since they create diagram streams
+ * Also used for diagram tests, since they create their own stream diagram streams
  */
 module.exports.sampleCycleSources = overrideSourcesWithoutStreaming({
-  CONFIG: config,
+  CONFIG: sampleConfig,
   // ACTION_CONFIG configures the generic cycleRecords to call/match the correct actions
   ACTION_CONFIG: {
     configByType: actionConfigLookup
@@ -108,4 +108,4 @@ module.exports.actionConfigs = R.map(type => actionConfigLookup[type], actionTyp
 module.exports.actions = makeActionCreators(ACTION_CONFIGS, scopeValues);
 
 // Create sample request and response bodies
-module.exports.testBodies = testBodies(ACTION_CONFIGS, scopeValues, {cities, projectLocations});
+module.exports.testBodies = testBodies(sampleConfig, ACTION_CONFIGS, scopeValues, {cities, projectLocations});

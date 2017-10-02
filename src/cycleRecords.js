@@ -82,6 +82,6 @@ module.exports.cycleRecords = v(({CONFIG, ACTION_CONFIG, ACTION, HTTP}) => {
       CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
       ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
       ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
-      HTTP: PropTypes.object.isRequired
+      HTTP: PropTypes.shape({}).isRequired
     }).isRequired]
   ], 'cycleRecords');
