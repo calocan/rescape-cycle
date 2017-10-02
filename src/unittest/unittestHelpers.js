@@ -120,8 +120,8 @@ const sampleRequestBody = v((config, actionConfig, actionCreator, objs) => {
 [
   ['config', PropTypes.shape({
     settings: PropTypes.shape({
-      api: PropTypes.shape().isRequired,
-    }).isRequired,
+      api: PropTypes.shape().isRequired
+    }).isRequired
   }).isRequired],
   ['actionConfig', PropTypes.shape().isRequired],
   ['actionCreator', PropTypes.func.isRequired],
@@ -199,8 +199,8 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
 [
   ['config', PropTypes.shape({
     settings: PropTypes.shape({
-      api: PropTypes.shape().isRequired,
-    }).isRequired,
+      api: PropTypes.shape().isRequired
+    }).isRequired
   }).isRequired],
   ['actionConfig', PropTypes.shape().isRequired],
   ['actionCreator', PropTypes.func.isRequired],
@@ -292,8 +292,8 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
 [
   ['config', PropTypes.shape({
     settings: PropTypes.shape({
-      api: PropTypes.shape().isRequired,
-    }).isRequired,
+      api: PropTypes.shape().isRequired
+    }).isRequired
   }).isRequired],
   ['actionConfig', PropTypes.shape().isRequired],
   ['actionCreator', PropTypes.func.isRequired],
