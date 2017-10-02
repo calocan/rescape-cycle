@@ -14,7 +14,6 @@ const {apiUri} = require('../helpers/configHelpers');
 const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
 const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
 const {reqPath} = require('rescape-ramda').throwing;
-const {sampleConfig} = require('./sampleConfig');
 const {PropTypes} = require('prop-types');
 const {mapKeys} = require('rescape-ramda');
 const {
@@ -73,6 +72,7 @@ module.exports.testBodies = v((config, actionConfigs, scopeValues, objs) =>
 
             // We always need to make the request, since other phases back reference it, so 'hard code' it
             const requestBody = sampleRequestBody(
+              config,
               R.merge(actionConfig, {phase: REQUEST}),
               actionCreators[actionName(actionConfig.model, actionConfig.verb, REQUEST)],
               reqPath([actionConfig.model], objs)
@@ -101,20 +101,28 @@ module.exports.testBodies = v((config, actionConfigs, scopeValues, objs) =>
 
 /**
  * Delegates to the property request body function based on the phasedActionConfig's verb (e.g. FETCH, REPLACE, etc)
+ * @param {Object} config A config containing the api info
+ * @param {Object} config.settings A config containing the api info
+ * @param {Object} config.settings.api A config containing the api info
  * @param {Object} actionConfig An actionConfig containing the verb which is check
  * @param {Function} actionCreator Returns an action body when called with objs
  * @param {Object, Array} objs Objects particular to the model of actionConfig
  * @returns {Object} A sample request body
  */
-const sampleRequestBody = v((actionConfig, actionCreator, objs) => {
+const sampleRequestBody = v((config, actionConfig, actionCreator, objs) => {
   return R.cond([
     // Fetch
-    [R.equals(FETCH), () => sampleFetchRequestBody(actionConfig, actionCreator, objs)],
+    [R.equals(FETCH), () => sampleFetchRequestBody(config, actionConfig, actionCreator, objs)],
     // If not a fetch assume a patch
-    [R.T, () => samplePatchRequestBody(actionConfig, actionCreator, objs)]
+    [R.T, () => samplePatchRequestBody(config, actionConfig, actionCreator, objs)]
   ])(actionConfig.verb);
 },
 [
+  ['config', PropTypes.shape({
+    settings: PropTypes.shape({
+      api: PropTypes.shape().isRequired,
+    }).isRequired,
+  }).isRequired],
   ['actionConfig', PropTypes.shape().isRequired],
   ['actionCreator', PropTypes.func.isRequired],
   ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
@@ -167,16 +175,19 @@ const sampleFailureBody = v((actionConfig, actionCreator, requestBody, objs) =>
 
 /**
  * Returns a sample fetch request body for tests
+ * @param {Object} config The config object, needed for the api
+ * @param {Object} config.settings The config object, needed for the api
+ * @param {Object} config.settings.api The config object, needed for the api
  * @param {Object} actionConfig An actionConfig for fetching the model of interest.
  * @param {Function} actionCreator When called with objs returns an action body
  * @param {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample request body based on the actionConfig and objs
  */
-const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry((actionConfig, actionCreator, objs) => {
+const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
   const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
   return {
     request: {
-      url: `${apiUri(reqPath(['settings', 'api'], sampleConfig))}/${actionConfig.model}`,
+      url: `${apiUri(reqPath(['settings', 'api'], config))}/${actionConfig.model}`,
       type: actionTypeLookup[REQUEST],
       filters: R.omit(['type'], actionCreator(objs)),
       // We process all responses in the same place for now,
@@ -186,6 +197,11 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
   };
 }),
 [
+  ['config', PropTypes.shape({
+    settings: PropTypes.shape({
+      api: PropTypes.shape().isRequired,
+    }).isRequired,
+  }).isRequired],
   ['actionConfig', PropTypes.shape().isRequired],
   ['actionCreator', PropTypes.func.isRequired],
   ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
@@ -240,17 +256,20 @@ const sampleFetchResponseFailure = module.exports.sampleFetchResponseFailure = v
 
 /**
  * HTTP driver sample patch request body
+ * @param {Object} config The config object, needed for the api
+ * @param {Object} config.settings The config object, needed for the api
+ * @param {Object} config.settings.api The config object, needed for the api
  * @params {Object} actionConfig An actionConfig for fetching the model of interest
  * @param {Function} actionCreator When called with objs returns an action body
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample request patch body based on the actionConfig and objs
  */
-const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry((actionConfig, actionCreator, objs) => {
+const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
   const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
   return {
     // PATCH calls don't have a URL path, since the path is in the standarized
     // JSON query
-    url: apiUri(reqPath(['settings', 'api'], sampleConfig)),
+    url: apiUri(reqPath(['settings', 'api'], config)),
     method: 'PATCH',
     type: actionTypeLookup[REQUEST],
     query: {
@@ -271,6 +290,11 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
   };
 }),
 [
+  ['config', PropTypes.shape({
+    settings: PropTypes.shape({
+      api: PropTypes.shape().isRequired,
+    }).isRequired,
+  }).isRequired],
   ['actionConfig', PropTypes.shape().isRequired],
   ['actionCreator', PropTypes.func.isRequired],
   ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
