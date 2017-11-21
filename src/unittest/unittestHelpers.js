@@ -95,7 +95,7 @@ module.exports.testBodies = v((config, actionConfigs, scopeValues, objs) =>
 [
   ['config', PropTypes.shape().isRequired],
   ['actionConfigs', PropTypes.array.isRequired],
-  ['scopeValues', PropTypes.shape().isRequired],
+  ['makeScopeValues', PropTypes.shape().isRequired],
   ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
 ], 'testBodies');
 
@@ -343,3 +343,27 @@ R.merge(
   ['requestBody', PropTypes.shape().isRequired],
   ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
 ], 'sampleFetchResponseFailure');
+
+/**
+ * Makes consistant fake scope values for the given scope keys
+ * Make up scope values, 10, 100, 1000 etc
+ * @param {[String]} scopeKeys to create values for
+ * @returns {Object} Keyed by scope keys and valued by the fake values
+ */
+module.exports.makeScopeValues = scopeKeys => R.fromPairs(R.addIndex(R.map)((k, i) => [k, Math.pow(10, i + 1)], scopeKeys));
+
+/**
+ * Given an object of actionCreator functions and the scopeKeys expected by those actionCreators,
+ * returns scoped actionCreator functions by generating fake values for the scope.
+ * This is useful for testing actions and reducers when the actual scope values don't matter,
+ * and we just want to trigger the actions and reducer
+ * @param {Function} actionCreators A function expecting the scope and returning an object
+ * keyed by action name and valued by action functions that expect the actual action
+ * @param {Object} scopeValues Object of values that the actions expects, e.g. {user: 123, project: 456}.
+ * Different actionCreators might use one or more of the scope values. Just make sure all needed values are in
+ * this object
+ * @returns {Object} Keyed by action name and valued by an action that expects a Redux action body
+ */
+module.exports.makeTestScopedActions = (actionCreators, scopeValues) => {
+  return actionCreators(scopeValues);
+};

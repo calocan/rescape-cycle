@@ -12,6 +12,7 @@
  * Sample actions fro testing
  */
 
+const {makeScopeValues} = require('unittest/unittestHelpers');
 const {VERBS, makeActionConfigLookup, makeActionTypesLookup} = require('../helpers/actionHelpers');
 const R = require('ramda');
 const {FETCH, ADD, REMOVE} = VERBS;
@@ -85,10 +86,7 @@ module.exports.sampleCycleSources = overrideSourcesWithoutStreaming({
  * (e.g. and add project action might just have a project name--we need to add the user id)
  * @type {{user: string, project: string}}
  */
-const scopeValues = module.exports.scopeValues = {
-  user: '123',
-  project: '456'
-};
+const scopeValues = module.exports.scopeValues = makeScopeValues(['user', 'project']);
 
 /**
  * Look up each action config for the action we are testing
