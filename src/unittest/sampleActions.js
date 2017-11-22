@@ -80,13 +80,14 @@ module.exports.sampleCycleSources = overrideSourcesWithoutStreaming({
 });
 
 
+const scopeKeys = module.exports.scopeKeys = ['user', 'project'];
 /**
  * A Sample scope for testing actions. The scope is merged into action bodies for
  * validation, security, and to fill in values that may not be passed in an action body
  * (e.g. and add project action might just have a project name--we need to add the user id)
  * @type {{user: string, project: string}}
  */
-const scopeValues = module.exports.scopeValues = makeScopeValues(['user', 'project']);
+const scopeValues = module.exports.scopeValues = makeScopeValues(scopeKeys);
 
 /**
  * Look up each action config for the action we are testing
@@ -105,5 +106,13 @@ module.exports.actionConfigs = R.map(type => actionConfigLookup[type], actionTyp
  */
 module.exports.actions = makeActionCreators(ACTION_CONFIGS, scopeValues);
 
-// Create sample request and response bodies
-module.exports.testBodies = testBodies(sampleConfig, ACTION_CONFIGS, scopeValues, {cities, projectLocations});
+/**
+ * Sample objects to use with testBodies
+ * @type {{cities, projectLocations}}
+ */
+const sampleObjs = module.exports.sampleObjs = {cities, projectLocations};
+
+/**
+ * Create sample request and response bodies
+ */
+module.exports.testBodies = testBodies(sampleConfig, ACTION_CONFIGS, scopeValues, sampleObjs);

@@ -9,16 +9,18 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {default: configureStore} = require('redux-mock-store');
+const {default: thunk} = require('redux-thunk');
+const middlewares = [thunk];
 const R = require('ramda');
 const {apiUri} = require('../helpers/configHelpers');
 const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
 const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
-const {reqPath} = require('rescape-ramda').throwing;
 const {PropTypes} = require('prop-types');
-const {mapKeys} = require('rescape-ramda');
+const {mapKeys, mergeDeep, throwing: {reqPath}} = require('rescape-ramda');
 const {
-  PHASES: { REQUEST, SUCCESS, FAILURE},
-  VERBS: { FETCH, ADD }
+  PHASES: {REQUEST, SUCCESS, FAILURE},
+  VERBS: {FETCH, ADD}
 } = require('../helpers/actionHelpers');
 const {v} = require('rescape-validate');
 
@@ -50,54 +52,54 @@ const {v} = require('rescape-validate');
  * }
  * @returns {Object} All test bodies as shown in the example above
  */
-module.exports.testBodies = v((config, actionConfigs, scopeValues, objs) =>
-  // Add 'Body' to the action name so we know this is a test request/response body
-  mapKeys(
-    theActionName => `${theActionName}Body`,
-    // Each iteration returns an object of three items, so merge them all
-    R.mergeAll(R.map(
-      // Map each actionConfig, which itself represents the three phases--REQUEST, SUCCESS, FAILURE
-      actionConfig => {
-        // Map the actionName to the phase. We'll use this to resolve the actionCreator action name to a phase
-        const actionNameToPhase =
-          mapKeys(phase => actionName(actionConfig.model, actionConfig.verb, phase), {REQUEST, SUCCESS, FAILURE});
-        // Creates the three actionCreators, one for each phase.
-        const actionCreators = makeActionCreatorsForConfig(actionConfig, scopeValues);
-        // Create a the three actionCreators for this actionConfig and map each to the appropriate
-        // resquest/response body based on the phase and verb (e.g. FETCH, REPLACE, etc)
-        return R.mapObjIndexed(
-          (actionCreator, name) => {
-            const phase = actionNameToPhase[name];
-            const phasedActionConfig = R.merge(actionConfig, {phase});
+const testBodies = module.exports.testBodies = v((config, actionConfigs, scopeValues, objs) =>
+    // Add 'Body' to the action name so we know this is a test request/response body
+    mapKeys(
+      theActionName => `${theActionName}Body`,
+      // Each iteration returns an object of three items, so merge them all
+      R.mergeAll(R.map(
+        // Map each actionConfig, which itself represents the three phases--REQUEST, SUCCESS, FAILURE
+        actionConfig => {
+          // Map the actionName to the phase. We'll use this to resolve the actionCreator action name to a phase
+          const actionNameToPhase =
+            mapKeys(phase => actionName(actionConfig.model, actionConfig.verb, phase), {REQUEST, SUCCESS, FAILURE});
+          // Creates the three actionCreators, one for each phase.
+          const actionCreators = makeActionCreatorsForConfig(actionConfig, scopeValues);
+          // Create a the three actionCreators for this actionConfig and map each to the appropriate
+          // resquest/response body based on the phase and verb (e.g. FETCH, REPLACE, etc)
+          return R.mapObjIndexed(
+            (actionCreator, name) => {
+              const phase = actionNameToPhase[name];
+              const phasedActionConfig = R.merge(actionConfig, {phase});
 
-            // We always need to make the request, since other phases back reference it, so 'hard code' it
-            const requestBody = sampleRequestBody(
-              config,
-              R.merge(actionConfig, {phase: REQUEST}),
-              actionCreators[actionName(actionConfig.model, actionConfig.verb, REQUEST)],
-              reqPath([actionConfig.model], objs)
-            );
+              // We always need to make the request, since other phases back reference it, so 'hard code' it
+              const requestBody = sampleRequestBody(
+                config,
+                R.merge(actionConfig, {phase: REQUEST}),
+                actionCreators[actionName(actionConfig.model, actionConfig.verb, REQUEST)],
+                reqPath([actionConfig.model], objs)
+              );
 
-            // Pick the correct body function. Also pass the objs of the actionConfig's model to use in our
-            // request/response
-            return R.cond([
-              [R.equals(REQUEST), R.always(requestBody)],
-              [R.equals(SUCCESS), () => sampleSuccessBody(phasedActionConfig, actionCreator, requestBody, reqPath([actionConfig.model], objs))],
-              [R.equals(FAILURE), () => sampleFailureBody(phasedActionConfig, actionCreator, requestBody, reqPath([actionConfig.model], objs))]
-            ])(phase);
-          },
-          actionCreators
-        );
-      },
-      actionConfigs
-    ))
-),
-[
-  ['config', PropTypes.shape().isRequired],
-  ['actionConfigs', PropTypes.array.isRequired],
-  ['makeScopeValues', PropTypes.shape().isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'testBodies');
+              // Pick the correct body function. Also pass the objs of the actionConfig's model to use in our
+              // request/response
+              return R.cond([
+                [R.equals(REQUEST), R.always(requestBody)],
+                [R.equals(SUCCESS), () => sampleSuccessBody(phasedActionConfig, actionCreator, requestBody, reqPath([actionConfig.model], objs))],
+                [R.equals(FAILURE), () => sampleFailureBody(phasedActionConfig, actionCreator, requestBody, reqPath([actionConfig.model], objs))]
+              ])(phase);
+            },
+            actionCreators
+          );
+        },
+        actionConfigs
+      ))
+    ),
+  [
+    ['config', PropTypes.shape().isRequired],
+    ['actionConfigs', PropTypes.array.isRequired],
+    ['makeScopeValues', PropTypes.shape().isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'testBodies');
 
 /**
  * Delegates to the property request body function based on the phasedActionConfig's verb (e.g. FETCH, REPLACE, etc)
@@ -110,23 +112,23 @@ module.exports.testBodies = v((config, actionConfigs, scopeValues, objs) =>
  * @returns {Object} A sample request body
  */
 const sampleRequestBody = v((config, actionConfig, actionCreator, objs) => {
-  return R.cond([
-    // Fetch
-    [R.equals(FETCH), () => sampleFetchRequestBody(config, actionConfig, actionCreator, objs)],
-    // If not a fetch assume a patch
-    [R.T, () => samplePatchRequestBody(config, actionConfig, actionCreator, objs)]
-  ])(actionConfig.verb);
-},
-[
-  ['config', PropTypes.shape({
-    settings: PropTypes.shape({
-      api: PropTypes.shape().isRequired
-    }).isRequired
-  }).isRequired],
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'sampleRequestBody');
+    return R.cond([
+      // Fetch
+      [R.equals(FETCH), () => sampleFetchRequestBody(config, actionConfig, actionCreator, objs)],
+      // If not a fetch assume a patch
+      [R.T, () => samplePatchRequestBody(config, actionConfig, actionCreator, objs)]
+    ])(actionConfig.verb);
+  },
+  [
+    ['config', PropTypes.shape({
+      settings: PropTypes.shape({
+        api: PropTypes.shape().isRequired
+      }).isRequired
+    }).isRequired],
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'sampleRequestBody');
 
 /**
  * Delegates to the proper success response body function based on the phasedActionConfig's verb (e.g. FETCH, REPLACE, etc)
@@ -137,18 +139,18 @@ const sampleRequestBody = v((config, actionConfig, actionCreator, objs) => {
  * @returns {Object} A sample request body
  */
 const sampleSuccessBody = v((actionConfig, actionCreator, requestBody, objs) =>
-  R.cond([
-    // Fetch
-    [R.equals(FETCH), () => sampleFetchResponseSuccess(actionConfig, actionCreator, requestBody, objs)],
-    // If not a fetch assume a patch
-    [R.T, () => samplePatchResponseSuccess(actionConfig, actionCreator, requestBody, objs)]
-  ])(actionConfig.verb),
-[
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['requestBody', PropTypes.shape().isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'sampleSuccessBody');
+    R.cond([
+      // Fetch
+      [R.equals(FETCH), () => sampleFetchResponseSuccess(actionConfig, actionCreator, requestBody, objs)],
+      // If not a fetch assume a patch
+      [R.T, () => samplePatchResponseSuccess(actionConfig, actionCreator, requestBody, objs)]
+    ])(actionConfig.verb),
+  [
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['requestBody', PropTypes.shape().isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'sampleSuccessBody');
 
 
 /**
@@ -160,18 +162,18 @@ const sampleSuccessBody = v((actionConfig, actionCreator, requestBody, objs) =>
  * @returns {Object} A sample request body
  */
 const sampleFailureBody = v((actionConfig, actionCreator, requestBody, objs) =>
-  R.cond([
-    // Fetch
-    [R.equals(FETCH), () => sampleFetchResponseFailure(actionConfig, actionCreator, requestBody, objs)],
-    // If not a fetch assume a patch
-    [R.T, () => samplePatchResponseFailure(actionConfig, actionCreator, requestBody, objs)]
-  ])(actionConfig.verb),
-[
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['requestBody', PropTypes.shape().isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'sampleFailureBody');
+    R.cond([
+      // Fetch
+      [R.equals(FETCH), () => sampleFetchResponseFailure(actionConfig, actionCreator, requestBody, objs)],
+      // If not a fetch assume a patch
+      [R.T, () => samplePatchResponseFailure(actionConfig, actionCreator, requestBody, objs)]
+    ])(actionConfig.verb),
+  [
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['requestBody', PropTypes.shape().isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'sampleFailureBody');
 
 /**
  * Returns a sample fetch request body for tests
@@ -184,28 +186,28 @@ const sampleFailureBody = v((actionConfig, actionCreator, requestBody, objs) =>
  * @returns {Object} The sample request body based on the actionConfig and objs
  */
 const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
-  const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
-  return {
-    request: {
-      url: `${apiUri(reqPath(['settings', 'api'], config))}/${actionConfig.model}`,
-      type: actionTypeLookup[REQUEST],
-      filters: R.omit(['type'], actionCreator(objs)),
-      // We process all responses in the same place for now,
-      // so use a catch-all category name
-      category: 'all'
-    }
-  };
-}),
-[
-  ['config', PropTypes.shape({
-    settings: PropTypes.shape({
-      api: PropTypes.shape().isRequired
-    }).isRequired
-  }).isRequired],
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'sampleFetchRequestBody');
+    const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
+    return {
+      request: {
+        url: `${apiUri(reqPath(['settings', 'api'], config))}/${actionConfig.model}`,
+        type: actionTypeLookup[REQUEST],
+        filters: R.omit(['type'], actionCreator(objs)),
+        // We process all responses in the same place for now,
+        // so use a catch-all category name
+        category: 'all'
+      }
+    };
+  }),
+  [
+    ['config', PropTypes.shape({
+      settings: PropTypes.shape({
+        api: PropTypes.shape().isRequired
+      }).isRequired
+    }).isRequired],
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'sampleFetchRequestBody');
 
 
 /**
@@ -217,19 +219,19 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
  * @returns {Object} The sample response body based on the actionConfig and objs
  */
 const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
-  R.merge(
-    requestBody, {
-      status: 200,
-      data: objs
-    }
-  )
-),
-[
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['requestBody', PropTypes.shape().isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'sampleFetchResponseSuccess');
+    R.merge(
+      requestBody, {
+        status: 200,
+        data: objs
+      }
+    )
+  ),
+  [
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['requestBody', PropTypes.shape().isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'sampleFetchResponseSuccess');
 
 /**
  * HTTP driver sample error response.
@@ -240,19 +242,19 @@ const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v
  * @returns {Object} The sample response error based on the actionConfig and objs
  */
 const sampleFetchResponseFailure = module.exports.sampleFetchResponseFailure = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
-  R.merge(
-    requestBody, {
-      status: 500,
-      message: 'Internal Server Error'
-    }
-  )
-),
-[
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['requestBody', PropTypes.shape().isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'sampleFetchResponseFailure');
+    R.merge(
+      requestBody, {
+        status: 500,
+        message: 'Internal Server Error'
+      }
+    )
+  ),
+  [
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['requestBody', PropTypes.shape().isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'sampleFetchResponseFailure');
 
 /**
  * HTTP driver sample patch request body
@@ -265,40 +267,40 @@ const sampleFetchResponseFailure = module.exports.sampleFetchResponseFailure = v
  * @returns {Object} The sample request patch body based on the actionConfig and objs
  */
 const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
-  const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
-  return {
-    // PATCH calls don't have a URL path, since the path is in the standarized
-    // JSON query
-    url: apiUri(reqPath(['settings', 'api'], config)),
-    method: 'PATCH',
-    type: actionTypeLookup[REQUEST],
-    query: {
-      op: R.toLower(actionConfig.verb),
-      path: `/${actionConfig.model}`,
-      // Call the action creator with objs, omitting the ids and making it an array if we are simulating an ADD
-      // Omit the type from the value since type isn't relevant to a query
-      value: R.omit(['type'], actionCreator(
-        R.map(
-          R.omit(actionConfig.verb === ADD ? ['id'] : []),
-          actionConfig.verb === ADD ? R.values(objs) : objs
-        )
-      ))
-    },
-    // We process all responses in the same place for now,
-    // so use a catch-all category name
-    category: 'all'
-  };
-}),
-[
-  ['config', PropTypes.shape({
-    settings: PropTypes.shape({
-      api: PropTypes.shape().isRequired
-    }).isRequired
-  }).isRequired],
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'samplePatchRequestBody');
+    const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
+    return {
+      // PATCH calls don't have a URL path, since the path is in the standarized
+      // JSON query
+      url: apiUri(reqPath(['settings', 'api'], config)),
+      method: 'PATCH',
+      type: actionTypeLookup[REQUEST],
+      query: {
+        op: R.toLower(actionConfig.verb),
+        path: `/${actionConfig.model}`,
+        // Call the action creator with objs, omitting the ids and making it an array if we are simulating an ADD
+        // Omit the type from the value since type isn't relevant to a query
+        value: R.omit(['type'], actionCreator(
+          R.map(
+            R.omit(actionConfig.verb === ADD ? ['id'] : []),
+            actionConfig.verb === ADD ? R.values(objs) : objs
+          )
+        ))
+      },
+      // We process all responses in the same place for now,
+      // so use a catch-all category name
+      category: 'all'
+    };
+  }),
+  [
+    ['config', PropTypes.shape({
+      settings: PropTypes.shape({
+        api: PropTypes.shape().isRequired
+      }).isRequired
+    }).isRequired],
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'samplePatchRequestBody');
 
 /**
  * HTTP driver sample patch response body
@@ -309,18 +311,18 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
  * @returns {Object} The sample response patch body based on the actionConfig and objs
  */
 const samplePatchResponseSuccess = module.exports.samplePatchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
-({
-  status: 200,
-  request: requestBody,
-  data: objs
-})
-),
-[
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['requestBody', PropTypes.shape().isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'samplePatchResponseSuccess');
+    ({
+      status: 200,
+      request: requestBody,
+      data: objs
+    })
+  ),
+  [
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['requestBody', PropTypes.shape().isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'samplePatchResponseSuccess');
 
 /**
  * HTTP driver sample PATCH error response.
@@ -331,18 +333,18 @@ const samplePatchResponseSuccess = module.exports.samplePatchResponseSuccess = v
  * @returns {Object} The sample response error based on the actionConfig and objs
  */
 const samplePatchResponseFailure = module.exports.samplePatchResponseFailure = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
-R.merge(
-  requestBody, {
-    status: 500,
-    message: 'Internal Server Error'
-  }
-)),
-[
-  ['actionConfig', PropTypes.shape().isRequired],
-  ['actionCreator', PropTypes.func.isRequired],
-  ['requestBody', PropTypes.shape().isRequired],
-  ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
-], 'sampleFetchResponseFailure');
+    R.merge(
+      requestBody, {
+        status: 500,
+        message: 'Internal Server Error'
+      }
+    )),
+  [
+    ['actionConfig', PropTypes.shape().isRequired],
+    ['actionCreator', PropTypes.func.isRequired],
+    ['requestBody', PropTypes.shape().isRequired],
+    ['objs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
+  ], 'sampleFetchResponseFailure');
 
 /**
  * Makes consistant fake scope values for the given scope keys
@@ -350,7 +352,7 @@ R.merge(
  * @param {[String]} scopeKeys to create values for
  * @returns {Object} Keyed by scope keys and valued by the fake values
  */
-module.exports.makeScopeValues = scopeKeys => R.fromPairs(R.addIndex(R.map)((k, i) => [k, Math.pow(10, i + 1)], scopeKeys));
+const makeScopeValues = module.exports.makeScopeValues = scopeKeys => R.fromPairs(R.addIndex(R.map)((k, i) => [k, Math.pow(10, i + 1)], scopeKeys));
 
 /**
  * Given an object of actionCreator functions and the scopeKeys expected by those actionCreators,
@@ -364,6 +366,46 @@ module.exports.makeScopeValues = scopeKeys => R.fromPairs(R.addIndex(R.map)((k, 
  * this object
  * @returns {Object} Keyed by action name and valued by an action that expects a Redux action body
  */
-module.exports.makeTestScopedActions = (actionCreators, scopeValues) => {
+const makeTestScopedActions = module.exports.makeTestScopedActions = (actionCreators, scopeValues) => {
   return actionCreators(scopeValues);
+};
+
+/**
+ * Makes a mock store with the given state and optional sampleUserSettings. If the sampleUserSettings
+ * they are merged into the state with deepMerge, so make sure the structure matches the state
+ * @param {Object} state The initial redux state
+ * @param {Object} sampleUserSettings Merges in sample local settings, like those from a browser cache
+ * @returns {Object} A mock redux store
+ */
+const makeMockStore = module.exports.makeMockStore = (state, sampleUserSettings = {}) => {
+  const mockStore = configureStore(middlewares);
+  // Creates a mock store that merges the initial state with local user settings.
+  return mockStore(
+    mergeDeep(
+      state,
+      sampleUserSettings
+    )
+  );
+};
+
+/**
+ * Creates actions and sample responses for those actions. See unittestHelpers.spec.js for an example
+ * of how to use this.
+ * @param {Object} actionConfigs keyed by action name and valued by action config. See sampleActions.js for an example
+ * @param {Object} actionCreators keyed by action name and valued by unscoped action function that expects
+ * scope values in order to return normal action functions that return an acton body
+ * @param {[String]} scopeKeys A list of strings representing all scope keys needed by the actions
+ * @param {Object} state The (initial) redux state. This is needed for URI settings by testBodies
+ * @param {Object} objs keyed by the models of the actionConfigs and valued by instances of those models
+ * @return {{actions: Object, responses: *}} Keyed by action name and valued by a sample response.
+ * This includes three actions for each actionConfig, one for requests, success, and errors for asynchronous actions
+ */
+module.exports.createActionsAndSampleResponses = (actionConfigs, actionCreators, scopeKeys, state, objs) => {
+  const scopeValues = makeScopeValues(scopeKeys);
+  const actions = makeTestScopedActions(actionCreators, scopeValues);
+  const responses = testBodies(state, actionConfigs, scopeValues, objs);
+  return {
+    actions,
+    responses
+  }
 };

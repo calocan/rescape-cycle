@@ -8,8 +8,10 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {ACTION_CONFIGS, MODELS, scopeValues} = require('./sampleActions');
-const {testBodies} = require('./unittestHelpers');
+
+const {makeActionCreators} = require('helpers/actionCreatorHelpers');
+const {createActionsAndSampleResponses, makeMockStore, makeTestScopedActions, makeScopeValues, testBodies} = require('unittest/unittestHelpers');
+const {ACTION_CONFIGS, MODELS, scopeValues, scopeKeys, sampleObjs, actionConfigs} = require('./sampleActions');
 const {cities} = require('./sampleCities');
 const R = require('ramda');
 const {projectLocations} = require('./sampleProjectLocations');
@@ -44,5 +46,26 @@ describe('testHelpers', () => {
     expect(R.keys(R.pick(['op', 'path', 'value'], bodies.addCitiesRequestBody.query))).toEqual(
       ['op', 'path', 'value']
     );
+  });
+
+  test('makeScopeValues', () => {
+    expect(R.values(makeScopeValues(['a', 'b']))).toEqual([10, 100]);
+  });
+
+  test('makeTestScopedActions', () => {
+    const actionCreators = makeActionCreators(ACTION_CONFIGS);
+    expect(R.keys(makeTestScopedActions(actionCreators, scopeValues))).
+    toEqual(R.keys(actionCreators(scopeValues)))
+  });
+
+  test('makeMockStore', () => {
+    expect(makeMockStore(sampleConfig).getState()).toEqual(sampleConfig);
+  });
+
+  test('createActionsAndSampleResponses', () => {
+    const actionCreators = makeActionCreators(ACTION_CONFIGS);
+    const {actions, responses} = createActionsAndSampleResponses(ACTION_CONFIGS, actionCreators, scopeKeys, sampleConfig, sampleObjs)
+    expect(R.keys(actions)).toEqual(R.keys(actionConfigs));
+    expect(R.keys(responses)).toEqual(R.map(action => `${action}Body`, R.keys(actionConfigs)));
   });
 });
