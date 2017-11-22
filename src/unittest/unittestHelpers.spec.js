@@ -64,10 +64,13 @@ describe('testHelpers', () => {
 
   test('createActionsAndSampleResponses', () => {
     const actionCreators = makeActionCreators(ACTION_CONFIGS);
-    const {actions, responses} = createActionsAndSampleResponses(
+    const {actions, responses, newObjs, savedObjs} = createActionsAndSampleResponses(
       ACTION_CONFIGS, actionCreators, scopeKeys, sampleConfig, sampleObjs
     );
     expect(R.keys(actions)).toEqual(R.keys(actionConfigs));
     expect(R.keys(responses)).toEqual(R.map(action => `${action}Body`, R.keys(actionConfigs)));
+    const models = R.uniq(R.map(config => config.model, ACTION_CONFIGS));
+    expect(R.keys(savedObjs)).toEqual(models);
+    expect(R.keys(newObjs)).toEqual(models);
   });
 });

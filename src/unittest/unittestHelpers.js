@@ -9,6 +9,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
 const {default: configureStore} = require('redux-mock-store');
 const {default: thunk} = require('redux-thunk');
 const middlewares = [thunk];
@@ -17,7 +18,7 @@ const {apiUri} = require('../helpers/configHelpers');
 const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
 const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
 const {PropTypes} = require('prop-types');
-const {mapKeys, mergeDeep, throwing: {reqPath}} = require('rescape-ramda');
+const {mapKeys, mergeDeep, camelCase, capitalize, throwing: {reqPath}} = require('rescape-ramda');
 const {
   PHASES: {REQUEST, SUCCESS, FAILURE},
   VERBS: {FETCH, ADD}
@@ -404,8 +405,23 @@ module.exports.createActionsAndSampleResponses = (actionConfigs, actionCreators,
   const scopeValues = makeScopeValues(scopeKeys);
   const actions = makeTestScopedActions(actionCreators, scopeValues);
   const responses = testBodies(state, actionConfigs, scopeValues, objs);
+  const savedObjs =
+    R.fromPairs(R.map(
+      actionConfig => [
+        actionConfig.model,
+        R.values(
+          reqPath(
+            [`${(camelCase(R.toLower(actionConfig.verb)))}${capitalize(actionConfig.model)}SuccessBody`, 'data'],
+            responses
+          )
+        )],
+      actionConfigs)
+    );
+  const newObjs = R.map(R.map(R.omit(['id'])), savedObjs);
   return {
     actions,
-    responses
+    responses,
+    newObjs,
+    savedObjs
   };
 };
