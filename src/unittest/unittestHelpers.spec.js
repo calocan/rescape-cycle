@@ -55,7 +55,7 @@ describe('testHelpers', () => {
   test('makeTestScopedActions', () => {
     const actionCreators = makeActionCreators(ACTION_CONFIGS);
     expect(R.keys(makeTestScopedActions(actionCreators, scopeValues))).
-    toEqual(R.keys(actionCreators(scopeValues)))
+    toEqual(R.keys(actionCreators(scopeValues)));
   });
 
   test('makeMockStore', () => {
@@ -64,7 +64,9 @@ describe('testHelpers', () => {
 
   test('createActionsAndSampleResponses', () => {
     const actionCreators = makeActionCreators(ACTION_CONFIGS);
-    const {actions, responses} = createActionsAndSampleResponses(ACTION_CONFIGS, actionCreators, scopeKeys, sampleConfig, sampleObjs)
+    const {actions, responses} = createActionsAndSampleResponses(
+      ACTION_CONFIGS, actionCreators, scopeKeys, sampleConfig, sampleObjs
+    );
     expect(R.keys(actions)).toEqual(R.keys(actionConfigs));
     expect(R.keys(responses)).toEqual(R.map(action => `${action}Body`, R.keys(actionConfigs)));
   });

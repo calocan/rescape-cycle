@@ -407,5 +407,5 @@ module.exports.createActionsAndSampleResponses = (actionConfigs, actionCreators,
   return {
     actions,
     responses
-  }
+  };
 };
