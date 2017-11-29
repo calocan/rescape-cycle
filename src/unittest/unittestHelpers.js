@@ -370,8 +370,6 @@ const makeTestScopedActions = module.exports.makeTestScopedActions = (actionCrea
   return actionCreators(scopeValues);
 };
 
-
-
 /**
  * Creates actions and sample responses for those actions. See unittestHelpers.spec.js for an example
  * of how to use this.
@@ -418,10 +416,10 @@ module.exports.createActionsAndSampleResponses = (actionConfigs, actionCreators,
  * {Object} expectedBody The expected body value in the success action
  */
 module.exports.expectedSuccessfulAsyncActions = R.curry((scope, action, crud, expectedBody) => {
-  const {REQUEST, SUCCESS} = asyncActionsGenericKeys(scope, action, crud);
+  const {REQUEST: request, SUCCESS: success} = asyncActionsGenericKeys(scope, action, crud);
   return [
-    {type: REQUEST},
-    {type: SUCCESS, body: expectedBody}
+    {type: request},
+    {type: success, body: expectedBody}
   ];
 });
 
@@ -433,9 +431,9 @@ module.exports.expectedSuccessfulAsyncActions = R.curry((scope, action, crud, ex
  * {Object} expectedError The expected error value in the failure action
  */
 module.exports.expectedFailedAsyncActions = R.curry((scope, action, crud, expectedError) => {
-  const {REQUEST, FAILURE} = asyncActionsGenericKeys(scope, action, crud);
+  const {REQUEST: request, FAILURE: failure} = asyncActionsGenericKeys(scope, action, crud);
   return [
-    {type: REQUEST},
-    {type: FAILURE, error: expectedError}
+    {type: request},
+    {type: failure, error: expectedError}
   ];
 });
