@@ -10,15 +10,14 @@
  */
 
 
-const {default: configureStore} = require('redux-mock-store');
-const {default: thunk} = require('redux-thunk');
-const middlewares = [thunk];
-const R = require('ramda');
+const {asyncActionsGenericKeys} = require('helpers/actionHelpers');
 const {apiUri} = require('../helpers/configHelpers');
 const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
 const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
+
+const R = require('ramda');
 const {PropTypes} = require('prop-types');
-const {mapKeys, mergeDeep, camelCase, capitalize, throwing: {reqPath}} = require('rescape-ramda');
+const {mapKeys, camelCase, capitalize, throwing: {reqPath}} = require('rescape-ramda');
 const {
   PHASES: {REQUEST, SUCCESS, FAILURE},
   VERBS: {FETCH, ADD}
@@ -371,23 +370,7 @@ const makeTestScopedActions = module.exports.makeTestScopedActions = (actionCrea
   return actionCreators(scopeValues);
 };
 
-/**
- * Makes a mock store with the given state and optional sampleUserSettings. If the sampleUserSettings
- * they are merged into the state with deepMerge, so make sure the structure matches the state
- * @param {Object} state The initial redux state
- * @param {Object} sampleUserSettings Merges in sample local settings, like those from a browser cache
- * @returns {Object} A mock redux store
- */
-const makeMockStore = module.exports.makeMockStore = (state, sampleUserSettings = {}) => {
-  const mockStore = configureStore(middlewares);
-  // Creates a mock store that merges the initial state with local user settings.
-  return mockStore(
-    mergeDeep(
-      state,
-      sampleUserSettings
-    )
-  );
-};
+
 
 /**
  * Creates actions and sample responses for those actions. See unittestHelpers.spec.js for an example
@@ -425,3 +408,34 @@ module.exports.createActionsAndSampleResponses = (actionConfigs, actionCreators,
     savedObjs
   };
 };
+
+
+/**
+ * Returns the expected sequence of successful actionTypes
+ * {String} scope See asyncActionsGenericKeys
+ * {String} action See asyncActionsGenericKeys
+ * {String} crud See asyncActionsGenericKeys
+ * {Object} expectedBody The expected body value in the success action
+ */
+module.exports.expectedSuccessfulAsyncActions = R.curry((scope, action, crud, expectedBody) => {
+  const {REQUEST, SUCCESS} = asyncActionsGenericKeys(scope, action, crud);
+  return [
+    {type: REQUEST},
+    {type: SUCCESS, body: expectedBody}
+  ];
+});
+
+/**
+ * Returns the expected sequence of failed actionTypes
+ * {String} scope See asyncActionsGenericKeys
+ * {String} action See asyncActionsGenericKeys
+ * {String} crud See asyncActionsGenericKeys
+ * {Object} expectedError The expected error value in the failure action
+ */
+module.exports.expectedFailedAsyncActions = R.curry((scope, action, crud, expectedError) => {
+  const {REQUEST, FAILURE} = asyncActionsGenericKeys(scope, action, crud);
+  return [
+    {type: REQUEST},
+    {type: FAILURE, error: expectedError}
+  ];
+});

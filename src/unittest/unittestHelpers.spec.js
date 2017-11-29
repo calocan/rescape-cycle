@@ -9,6 +9,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {expectedFailedAsyncActions, expectedSuccessfulAsyncActions} = require('unittest/unittestHelpers');
 const {makeActionCreators} = require('helpers/actionCreatorHelpers');
 const {createActionsAndSampleResponses, makeMockStore, makeTestScopedActions, makeScopeValues, testBodies} = require('unittest/unittestHelpers');
 const {ACTION_CONFIGS, MODELS, scopeValues, scopeKeys, sampleObjs, actionConfigs} = require('./sampleActions');
@@ -54,13 +55,9 @@ describe('testHelpers', () => {
 
   test('makeTestScopedActions', () => {
     const actionCreators = makeActionCreators(ACTION_CONFIGS);
-    expect(R.keys(makeTestScopedActions(actionCreators, scopeValues))).
-    toEqual(R.keys(actionCreators(scopeValues)));
+    expect(R.keys(makeTestScopedActions(actionCreators, scopeValues))).toEqual(R.keys(actionCreators(scopeValues)));
   });
 
-  test('makeMockStore', () => {
-    expect(makeMockStore(sampleConfig).getState()).toEqual(sampleConfig);
-  });
 
   test('createActionsAndSampleResponses', () => {
     const actionCreators = makeActionCreators(ACTION_CONFIGS);
@@ -72,5 +69,13 @@ describe('testHelpers', () => {
     const models = R.uniq(R.map(config => config.model, ACTION_CONFIGS));
     expect(R.keys(savedObjs)).toEqual(models);
     expect(R.keys(newObjs)).toEqual(models);
+  });
+
+  test('expectedSuccessfulAsyncActions', () => {
+    expect(expectedSuccessfulAsyncActions('person', 'user', 'FETCH', 'Some response')).toMatchSnapshot();
+  });
+
+  test('expectedFailedAsyncActions', () => {
+    expect(expectedFailedAsyncActions('person', 'user', 'FETCH', 'Some error')).toMatchSnapshot();
   });
 });

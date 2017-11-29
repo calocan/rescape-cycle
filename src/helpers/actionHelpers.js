@@ -232,8 +232,8 @@ const asyncActions = module.exports.asyncActions = v(R.curry((actionRoot, model,
  * const ACTION_CONFIGS = [
  * {model: MODELS.BLOCKNAMES, verb: FETCH, ret: {...}},
  * {model: MODELS.CITIES, verb: FETCH, ret: {...}},
- * {model: MODELS.REQUESTPOINTS, verb: FETCH, ret: {...}},
- * {model: MODELS.REQUESTPOINT_PROFILES, verb: FETCH, ret: {...}},
+ * {model: MODELS.DATAPOINTS, verb: FETCH, ret: {...}},
+ * {model: MODELS.DATAPOINT_PROFILES, verb: FETCH, ret: {...}},
  * {model: MODELS.PROJECT_PROFILES, verb: FETCH, ret: {...}},
  * {model: MODELS.PROJECT_LOCATIONS, verb: ADD, ret: {...}},
  * {model: MODELS.PROJECT_LOCATIONS, verb: REMOVE, ret: {...}}
@@ -323,3 +323,80 @@ module.exports.resolveActionConfig = v(R.curry((model, verb, phase, actionConfig
   ['phase', PropTypes.string.isRequired],
   ['actionConfigs', PropTypes.oneOfType([PropTypes.array, PropTypes.shape()]).isRequired]
 ], 'resolveActionConfig');
+
+
+/**
+ * The path of an action
+ * @param {String} scope The reducer scope (e.g. geojson)
+ * @param {String} actionKey The key of the action (e.g. markers)
+ * @returns {String} /${scope}/${actionKey}/
+ */
+const actionPath = module.exports.actionPath = R.curry((scope, actionKey) => `/${scope}/${actionKey}/`);
+/**
+ * Create a standard action value. Curryable
+ * @param {String} scope The reducer scope (e.g. geojson)
+ * @param {String} actionKey The key of the action (e.g. markers)
+ * @param {String} action The name of the action (e.g. fetch)
+ * @returns {String} /scope/actionKey/ACTION/
+ * actionId:: String -> String -> String
+ */
+const actionId = module.exports.actionId = R.curry((scope, actionKey, action) => `${actionPath(scope, actionKey)}${R.toUpper(action)}/`);
+
+/**
+ * For internal use to make consistent action keys in the form CRUD_ACTION_PHASE (e.g. FETCH_USER_REQUEST)
+ */
+const actionKeys = R.curry((action, crud, phase) =>`${crud}_${R.toUpper(action)}_${phase}`);
+/**
+ * For internal use to make consistent action values in the form scope/action/crud_phase
+ */
+const actionValues = R.curry((scope, action, crud, phase) =>`${scope}/${action}/${crud}_${phase}`);
+
+/**
+ * Async operations have three standard actionTypes for each crud type. Curryable.
+ * Use this when you need generic action keys. Probably just for testing
+ * @param {String} scope The scope of the reducer
+ * @param {String} action The subject of the async operation, such as a User
+ * @param {String} crud Default 'FETCH'. Or can be 'UPDATE', 'REMOVE' or anything else
+ * @returns {Object} where keys are (REQUEST|SUCCESS|FAILURE) and value is scope/ACTION/crud_(REQUEST|SUCCESS|FAILURE)
+ * e.g. {REQUEST: person/user/FETCH_REQUEST, SUCCESS: person/user/FETCH_SUCCESS, ERROR: person/user/FETCH_ERROR}
+ */
+const asyncActionsGenericKeys = module.exports.asyncActionsGenericKeys = R.curry((scope, action, crud = 'FETCH') => {
+  const actionValueMaker = actionValues(scope, action, crud);
+  return R.compose(
+    R.fromPairs,
+    R.map(phase => R.pair(R.toUpper(phase), actionValueMaker(phase))),
+  )(PHASES);
+});
+
+/**
+ * Returns standard async action handler functions,
+ * one to crud the data, one to handle success, one to handle failure
+ * @param {String} scope The scope of the reducer
+ * @param {String} action The subject of the async operation, such as a User
+ * @param {String} crud Default 'FETCH'. Or can be 'UPDATE', 'REMOVE' or anything else
+ * @param {Function} asyncFunc The asyncFunc to call. Must return a Task
+ * @returns {Object} {
+ *  CrudActionData: trivial action handler indicating crud call
+ *  CrudActionSuccess: trivial action handler indicating crud success, returns object with response body in 'body'
+ *  CrudActionFailure: trivial action handler indicating crud failure, returns object with exception in 'error'
+ * }
+ */
+const asyncActionCreators = module.exports.asyncActionCreators = R.curry((scope, action, crud) => {
+  if (typeof (action) === 'object') {
+    throw new Error();
+  }
+  const valueMaker = actionValues(scope, action, crud);
+  // Creates action values (e.g. FETCH_USER_REQUEST)
+  const {REQUEST, SUCCESS, FAILURE} = R.compose(
+    R.fromPairs,
+    R.map(phase => R.pair(phase, valueMaker(phase))),
+  )(PHASES);
+  const crudAction = phase => `${R.toLower(crud)}${capitalize(action)}${capitalize(phase)}`;
+  return {
+    // Create a CRUD action that has key and whatever params are passed in
+    [crudAction('data')]: (key, params) => R.merge({type: REQUEST, key}, params),
+    [crudAction('success')]: (body) => ({type: SUCCESS, body}),
+    [crudAction('failure')]: (error) => ({type: FAILURE, error})
+  };
+});
+
