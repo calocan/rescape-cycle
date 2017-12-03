@@ -22,8 +22,7 @@ const {makeActionCreators, actionConfig} = require('../helpers/actionCreatorHelp
 const {sampleConfig} = require('./sampleConfig');
 const {cities} = require('unittest/sampleCities');
 const {projectLocations} = require('unittest/sampleProjectLocations');
-const {testBodies} = require('unittest/unittestHelpers');
-const {cycleRecords} = require('../cycleRecords');
+const {getMockResponses} = require('unittest/mockResponses');
 
 // Sample action root, representing a module full of related actions
 const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
@@ -107,7 +106,7 @@ module.exports.actionConfigs = R.map(type => actionConfigLookup[type], actionTyp
 module.exports.actions = makeActionCreators(ACTION_CONFIGS, scopeValues);
 
 /**
- * Sample objects to use with testBodies
+ * Sample objects to use with getMockResponses
  * @type {{cities, projectLocations}}
  */
 const sampleObjs = module.exports.sampleObjs = {cities, projectLocations};
@@ -115,4 +114,4 @@ const sampleObjs = module.exports.sampleObjs = {cities, projectLocations};
 /**
  * Create sample request and response bodies
  */
-module.exports.testBodies = testBodies(sampleConfig, ACTION_CONFIGS, scopeValues, sampleObjs);
+module.exports.getMockResponses = getMockResponses(sampleConfig, ACTION_CONFIGS, scopeValues, sampleObjs);

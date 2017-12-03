@@ -11,43 +11,12 @@
 
 const {expectedFailedAsyncActions, expectedSuccessfulAsyncActions} = require('unittest/unittestHelpers');
 const {makeActionCreators} = require('helpers/actionCreatorHelpers');
-const {createActionsAndSampleResponses, makeMockStore, makeTestScopedActions, makeScopeValues, testBodies} = require('unittest/unittestHelpers');
-const {ACTION_CONFIGS, MODELS, scopeValues, scopeKeys, sampleObjs, actionConfigs} = require('./sampleActions');
-const {cities} = require('./sampleCities');
+const {createActionsAndSampleResponses, makeTestScopedActions, makeScopeValues} = require('unittest/unittestHelpers');
+const {ACTION_CONFIGS, scopeValues, scopeKeys, sampleObjs, actionConfigs} = require('./sampleActions');
 const R = require('ramda');
-const {projectLocations} = require('./sampleProjectLocations');
 const {sampleConfig} = require('./sampleConfig');
 
 describe('testHelpers', () => {
-  test('testBodies', () => {
-    const bodies = testBodies(
-      sampleConfig,
-      ACTION_CONFIGS,
-      scopeValues,
-      {[MODELS.CITIES]: cities, [MODELS.PROJECT_LOCATIONS]: projectLocations}
-    );
-    expect(R.keys(bodies)).toEqual([
-      'fetchCitiesRequestBody',
-      'fetchCitiesSuccessBody',
-      'fetchCitiesFailureBody',
-      'addCitiesRequestBody',
-      'addCitiesSuccessBody',
-      'addCitiesFailureBody',
-      'addProjectLocationsRequestBody',
-      'addProjectLocationsSuccessBody',
-      'addProjectLocationsFailureBody',
-      'removeProjectLocationsRequestBody',
-      'removeProjectLocationsSuccessBody',
-      'removeProjectLocationsFailureBody'
-    ]);
-    // Just make sure the body looks reasonable
-    expect(R.keys(R.pick(['url', 'type', 'filters', 'category'], bodies.fetchCitiesRequestBody.request))).toEqual(
-      ['url', 'type', 'filters', 'category']
-    );
-    expect(R.keys(R.pick(['op', 'path', 'value'], bodies.addCitiesRequestBody.query))).toEqual(
-      ['op', 'path', 'value']
-    );
-  });
 
   test('makeScopeValues', () => {
     expect(R.values(makeScopeValues(['a', 'b']))).toEqual([10, 100]);

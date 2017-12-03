@@ -56,7 +56,7 @@ describe('actionHelpers', () => {
       [FAILURE]: 'error'
     });
     const data = {name: 'Paris'};
-    // Call the _data action and expect data is mirrored in payload
+    // Call the REQUEST action and expect data is mirrored in payload
     expect(
       actionCreators[actionNames[REQUEST]](scope, data)
     ).toEqual(
@@ -64,7 +64,7 @@ describe('actionHelpers', () => {
     );
 
     const success = {name: 'Paris', fullName: 'Paris, France', description: 'delicieux'};
-    // Call the _success action and expect success is merged in
+    // Call the SUCCESS action and expect success is merged in
     expect(
       actionCreators[actionNames[SUCCESS]](scope, success)
     ).toEqual(
@@ -72,7 +72,7 @@ describe('actionHelpers', () => {
     );
 
     const error = {message: 'Closed for 100 year war'};
-    // Call the _failure action and expect error in error key
+    // Call the FAILURE action and expect error in error key
     expect(
       actionCreators[actionNames[FAILURE]](scope, error)
     ).toEqual(
