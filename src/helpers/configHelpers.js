@@ -9,8 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {v} = require('rescape-validate');
-const PropTypes = require('prop-types');
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
 
 module.exports.CYCLE_API_KEY = ['settings', 'cycle', 'drivers', 'api'];
 module.exports.API_CONFIG = ['settings', 'api'];
@@ -44,11 +44,11 @@ module.exports.apiUri = v(({protocol, host, port}) => `${protocol}://${host}:${p
  * @returns {Object} The matching current object or throws
 const resolve = module.exports.resolve = v(R.curry((path, state, context) =>
   // Resolve the current entry
-  reqPath(
+  reqPathThrowing(
     R.concat(
       path,
       // Resolve the current key
-      reqPath(R.concat(path, ['current']), config)
+      reqPathThrowing(R.concat(path, ['current']), config)
     ),
     config)
 ),

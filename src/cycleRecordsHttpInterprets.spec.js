@@ -8,14 +8,14 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRA/ACNTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const R = require('ramda');
-const {apiUri} = require('./helpers/configHelpers');
-const { actions, actionConfigs, actionTypeLookup } = require('unittest/sampleActions');
-const {cities} = require('unittest/sampleCities');
-const {fetchRecordHttpInterpret, updateRecordHttpInterpret} = require('./cycleRecordsHttpInterprets');
-const {API_CONFIG} = require('./helpers/configHelpers');
-const {sampleConfig} = require('unittest/sampleConfig');
-const {reqPath} = require('rescape-ramda').throwing;
+import R from 'ramda';
+import {apiUri} from './helpers/configHelpers';
+import { actions, actionConfigs, actionTypeLookup } from 'unittest/sampleActions';
+import {cities} from 'unittest/sampleCities';
+import {fetchRecordHttpInterpret, updateRecordHttpInterpret} from './cycleRecordsHttpInterprets';
+import {API_CONFIG} from './helpers/configHelpers';
+import {sampleConfig} from 'unittest/sampleConfig';
+import {reqPathThrowing} from 'rescape-ramda'
 
 describe('cycleRecordsHttpInterprets', () => {
   test('fetchRecordHttpInterpret', () => {
@@ -29,7 +29,7 @@ describe('cycleRecordsHttpInterprets', () => {
       // Pass all action keys except for type
       filters: R.omit(['type'], actions.fetchCitiesRequest(R.values(cities)))
     };
-    const apiConfig = reqPath(API_CONFIG, sampleConfig);
+    const apiConfig = reqPathThrowing(API_CONFIG, sampleConfig);
     expect(fetchRecordHttpInterpret({
       apiConfig: apiConfig,
       act: fetchCitiesAct
@@ -56,7 +56,7 @@ describe('cycleRecordsHttpInterprets', () => {
       // Pass all action keys except for type
       value: R.omit(['type'], actions.addCitiesRequest(R.values(cities)))
     };
-    const apiConfig = reqPath(API_CONFIG, sampleConfig);
+    const apiConfig = reqPathThrowing(API_CONFIG, sampleConfig);
     expect(updateRecordHttpInterpret({
       apiConfig: apiConfig,
       act: addCitiesAct

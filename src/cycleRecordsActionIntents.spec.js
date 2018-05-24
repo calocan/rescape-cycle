@@ -8,14 +8,12 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRA/ACNTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const R = require('ramda');
-const {apiUri} = require('./helpers/configHelpers');
-const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
-const { sampleCycleSources, actions, actionConfigs, actionTypeLookup} = require('unittest/sampleActions');
-const {cities} = require('unittest/sampleCities');
-const {cycleRecords} = require('./cycleRecords');
-const {reqPath} = require('rescape-ramda').throwing;
-const { fetchRecordActionIntent, updateRecordActionIntent } = require('./cycleRecordsActionIntents');
+import R from 'ramda';
+import {assertSourcesSinks} from './helpers/jestCycleHelpers';
+import { sampleCycleSources, actions, actionConfigs, actionTypeLookup} from 'unittest/sampleActions';
+import {cities} from 'unittest/sampleCities';
+import {reqPathThrowing} from 'rescape-ramda'
+import { fetchRecordActionIntent, updateRecordActionIntent } from './cycleRecordsActionIntents';
 
 describe('cycleRecordsIntents', () => {
   test('fetchRecordActionIntent', (done) => {
@@ -40,7 +38,7 @@ describe('cycleRecordsIntents', () => {
 
       ACTION_CONFIG: {
         // Get the ACTION_CONFIG stream
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
+        a: reqPathThrowing(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
     const sinks = {
@@ -82,7 +80,7 @@ describe('cycleRecordsIntents', () => {
       },
       ACTION_CONFIG: {
         // Get the ACTION_CONFIG stream
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
+        a: reqPathThrowing(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
     const sinks = {

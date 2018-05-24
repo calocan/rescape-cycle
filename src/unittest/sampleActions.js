@@ -12,17 +12,17 @@
  * Sample actions fro testing
  */
 
-const {makeScopeValues} = require('unittest/unittestHelpers');
-const {VERBS, makeActionConfigLookup, makeActionTypesLookup} = require('../helpers/actionHelpers');
-const R = require('ramda');
+import {makeScopeValues} from 'unittest/unittestHelpers';
+import {VERBS, makeActionConfigLookup, makeActionTypesLookup} from '../helpers/actionHelpers';
+import R from 'ramda';
 const {FETCH, ADD, REMOVE} = VERBS;
-const {overrideSources, overrideSourcesWithoutStreaming} = require('../helpers/cycleActionHelpers');
-const {camelCase} = require('rescape-ramda');
-const {makeActionCreators, actionConfig} = require('../helpers/actionCreatorHelpers');
-const {sampleConfig} = require('./sampleConfig');
-const {cities} = require('unittest/sampleCities');
-const {projectLocations} = require('unittest/sampleProjectLocations');
-const {getMockResponses} = require('unittest/mockResponses');
+import {overrideSources, overrideSourcesWithoutStreaming} from '../helpers/cycleActionHelpers';
+import {camelCase} from 'rescape-ramda';
+import {makeActionCreators, actionConfig} from '../helpers/actionCreatorHelpers';
+import {sampleConfig} from './sampleConfig';
+import {cities} from 'unittest/sampleCities';
+import {projectLocations} from 'unittest/sampleProjectLocations';
+import {getMockResponses} from 'unittest/mockResponses';
 
 // Sample action root, representing a module full of related actions
 const ACTION_ROOT = module.exports.ACTION_ROOT = 'sample';
@@ -114,4 +114,4 @@ const sampleObjs = module.exports.sampleObjs = {cities, projectLocations};
 /**
  * Create sample request and response bodies
  */
-module.exports.getMockResponses = getMockResponses(sampleConfig, ACTION_CONFIGS, scopeValues, sampleObjs);
+module.exports.mockResponses = getMockResponses(sampleConfig, ACTION_CONFIGS, scopeValues, sampleObjs);

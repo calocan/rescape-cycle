@@ -8,16 +8,15 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const R = require('ramda');
-const {makeActionCreatorsForConfig, actionCreatorNameForPhase} = require('./helpers/actionCreatorHelpers');
-const {mapDefault} = require('rescape-ramda');
-const {xs, Stream} = mapDefault('xs', require('xstream'));
-const {
-  PHASES: {SUCCESS, FAILURE}
-} = require('./helpers/actionHelpers');
-const {reqPath} = require('rescape-ramda').throwing;
-const {v} = require('rescape-validate');
-const PropTypes = require('prop-types');
+import R from 'ramda';
+import {makeActionCreatorsForConfig, actionCreatorNameForPhase} from './helpers/actionCreatorHelpers';
+import {mapDefault} from 'rescape-ramda';
+import xs, {Stream} from 'xstream'
+import { PHASES } from './helpers/actionHelpers';
+import {reqPathThrowing} from 'rescape-ramda'
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
+const {SUCCESS, FAILURE} = PHASES
 
 /**
  * Convert incoming intents to cycle actions
@@ -49,7 +48,7 @@ module.exports.successFailureHttpIntent = v(({ACTION_CONFIG, HTTP}) => {
  * @param actionConfig
  */
 const intent = v((response, actionConfigs) => {
-  const actionConfig = actionConfigs.configByType[reqPath(['request', 'type'], response)];
+  const actionConfig = actionConfigs.configByType[reqPathThrowing(['request', 'type'], response)];
   // Pass the request query in as scope. It has the same keys that the success/failure actionCreator
   const actionCreators = makeActionCreatorsForConfig(
     actionConfig,

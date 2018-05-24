@@ -12,8 +12,8 @@
  * Cycle.js sources for use by redux-cycles
  */
 
-const {makeHTTPDriver} = require('@cycle/http');
-const {createCycleMiddleware} = require('redux-cycles');
+import {makeHTTPDriver} from '@cycle/http';
+import {createCycleMiddleware} from 'redux-cycles';
 const cycleMiddleware = createCycleMiddleware();
 const { makeActionDriver } = cycleMiddleware;
 

@@ -9,18 +9,17 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {apiUri} = require('../helpers/configHelpers');
-const {asyncActionsPhaseKeysForActionConfig, actionName} = require('../helpers/actionHelpers');
-const {makeActionCreatorsForConfig} = require('../helpers/actionCreatorHelpers');
+import {apiUri} from '../helpers/configHelpers';
+import {asyncActionsPhaseKeysForActionConfig, actionName} from '../helpers/actionHelpers';
+import {makeActionCreatorsForConfig} from '../helpers/actionCreatorHelpers';
 
-const R = require('ramda');
-const {PropTypes} = require('prop-types');
-const {mapKeys, throwing: {reqPath}} = require('rescape-ramda');
-const {
-  PHASES: {REQUEST, SUCCESS, FAILURE},
-  VERBS: {FETCH, ADD}
-} = require('../helpers/actionHelpers');
-const {v} = require('rescape-validate');
+import R from 'ramda';
+import {PropTypes} from 'prop-types';
+import {mapKeys, reqPathThrowing} from 'rescape-ramda';
+import {PHASES, VERBS} from './helpers/actionHelpers'
+const {REQUEST, SUCCESS, FAILURE} = PHASES
+const {FETCH, ADD} = VERBS
+import {v} from 'rescape-validate';
 
 
 /**
@@ -76,15 +75,15 @@ const getMockResponses = module.exports.getMockResponses = v((config, actionConf
                 config,
                 R.merge(actionConfig, {phase: REQUEST}),
                 actionCreators[actionName(actionConfig.model, actionConfig.verb, REQUEST)],
-                reqPath([actionConfig.model], objs)
+                reqPathThrowing([actionConfig.model], objs)
               );
 
               // Pick the correct body function. Also pass the objs of the actionConfig's model to use in our
               // request/response
               return R.cond([
                 [R.equals(REQUEST), R.always(requestBody)],
-                [R.equals(SUCCESS), () => sampleSuccessBody(phasedActionConfig, actionCreator, requestBody, reqPath([actionConfig.model], objs))],
-                [R.equals(FAILURE), () => sampleFailureBody(phasedActionConfig, actionCreator, requestBody, reqPath([actionConfig.model], objs))]
+                [R.equals(SUCCESS), () => sampleSuccessBody(phasedActionConfig, actionCreator, requestBody, reqPathThrowing([actionConfig.model], objs))],
+                [R.equals(FAILURE), () => sampleFailureBody(phasedActionConfig, actionCreator, requestBody, reqPathThrowing([actionConfig.model], objs))]
               ])(phase);
             },
             actionCreators
@@ -188,7 +187,7 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
     const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
     return {
       request: {
-        url: `${apiUri(reqPath(['settings', 'api'], config))}/${actionConfig.model}`,
+        url: `${apiUri(reqPathThrowing(['settings', 'api'], config))}/${actionConfig.model}`,
         type: actionTypeLookup[REQUEST],
         filters: R.omit(['type'], actionCreator(objs)),
         // We process all responses in the same place for now,
@@ -270,7 +269,7 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
     return {
       // PATCH calls don't have a URL path, since the path is in the standarized
       // JSON query
-      url: apiUri(reqPath(['settings', 'api'], config)),
+      url: apiUri(reqPathThrowing(['settings', 'api'], config)),
       method: 'PATCH',
       type: actionTypeLookup[REQUEST],
       query: {

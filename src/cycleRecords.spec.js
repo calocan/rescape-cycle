@@ -8,19 +8,17 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRA/ACNTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const R = require('ramda');
-const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
-const {
-  sampleCycleSources, sampleCycleDrivers, actions,
-  testBodies: {
-    fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesSuccessBody, addCitiesSuccessBody
-  }
-} = require('unittest/sampleActions');
-const {cities} = require('unittest/sampleCities');
-const xs = require('xstream').default;
-const {cycleRecords} = require('./cycleRecords');
-const {reqPath} = require('rescape-ramda').throwing;
-const {run} = require('@cycle/run');
+import R from 'ramda';
+import {assertSourcesSinks} from './helpers/jestCycleHelpers';
+import {sampleCycleSources, sampleCycleDrivers, actions, mockResponses} from 'unittest/sampleActions';
+
+import {cities} from 'unittest/sampleCities';
+import xs from 'xstream';
+import {cycleRecords} from './cycleRecords';
+import {reqPathThrowing} from 'rescape-ramda';
+import {run} from '@cycle/run';
+
+const {fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesSuccessBody, addCitiesSuccessBody} = mockResponses;
 
 describe('cycleRecords', () => {
   test('cycle can start', () => {
@@ -48,10 +46,10 @@ describe('cycleRecords', () => {
         c: actions.fetchCitiesRequest(cities)
       },
       CONFIG: {
-        a: reqPath(['CONFIG'], sampleCycleSources)
+        a: reqPathThrowing(['CONFIG'], sampleCycleSources)
       },
       ACTION_CONFIG: {
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
+        a: reqPathThrowing(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
 
@@ -71,14 +69,14 @@ describe('cycleRecords', () => {
     };
 
     // Override the source drivers with our fake sources
-      assertSourcesSinks({
-        ACTION: {'-a---c----|': testSources.ACTION},
-        HTTP: {'---g---h--|': testSources.HTTP},
-        ACTION_CONFIG: {'a|': testSources.ACTION_CONFIG},
-        CONFIG: {'a|': testSources.CONFIG}
-      }, {
-        HTTP: {'-r---s----|': sinks.HTTP},
-        ACTION: {'---m---n--|': sinks.ACTION}
-      }, cycleRecords, done, {interval: 200});
+    assertSourcesSinks({
+      ACTION: {'-a---c----|': testSources.ACTION},
+      HTTP: {'---g---h--|': testSources.HTTP},
+      ACTION_CONFIG: {'a|': testSources.ACTION_CONFIG},
+      CONFIG: {'a|': testSources.CONFIG}
+    }, {
+      HTTP: {'-r---s----|': sinks.HTTP},
+      ACTION: {'---m---n--|': sinks.ACTION}
+    }, cycleRecords, done, {interval: 200});
   });
 });

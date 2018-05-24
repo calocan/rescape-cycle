@@ -8,12 +8,11 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const R = require('ramda');
-const {mapDefault} = require('rescape-ramda');
-const {xsm} = mapDefault('xs', require('xstream'));
-const {apiUri} = require('./helpers/configHelpers');
-const {v} = require('rescape-validate');
-const PropTypes = require('prop-types');
+import R from 'ramda';
+import {mapDefault} from 'rescape-ramda';
+import {apiUri} from './helpers/configHelpers';
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
 
 /**
  * Convert cycle actions to sink instructions

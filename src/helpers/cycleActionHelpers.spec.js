@@ -8,16 +8,17 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {streamConfigSources, overrideSources, overrideSourcesWithoutStreaming, mergeCycleSources} = require('./cycleActionHelpers');
-const xs = require('xstream').default;
-const {makeHTTPDriver} = require('@cycle/http');
-const {actionConfig} = require('./actionCreatorHelpers');
-const {sampleCycleSources} = require('unittest/sampleActions');
-const {VERBS: {FETCH}, makeActionConfigLookup} = require('./actionHelpers');
-const {sampleConfig} = require('unittest/sampleConfig');
-const {cycleRecords} = require('cycleRecords');
-const R = require('ramda');
-const {run} = require('@cycle/run');
+import {streamConfigSources, overrideSources, overrideSourcesWithoutStreaming, mergeCycleSources} from './cycleActionHelpers';
+import xs from 'xstream'
+import {makeHTTPDriver} from '@cycle/http';
+import {actionConfig} from './actionCreatorHelpers';
+import {sampleCycleSources} from 'unittest/sampleActions';
+import {VERBS, makeActionConfigLookup} from './actionHelpers';
+import {sampleConfig} from 'unittest/sampleConfig';
+import {cycleRecords} from 'cycleRecords';
+import R from 'ramda';
+import {run} from '@cycle/run';
+const {FETCH} = VERBS;
 
 describe('cycleActionHelpers', () => {
   const apple = 'apple';

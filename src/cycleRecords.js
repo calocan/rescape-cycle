@@ -8,20 +8,18 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const R = require('ramda');
-const {fetchRecordActionIntent, updateRecordActionIntent} = require('./cycleRecordsActionIntents');
-const {successFailureHttpIntent} = require('./cycleRecordsHttpIntents');
-const {fetchRecordHttpInterpret, updateRecordHttpInterpret} = require('./cycleRecordsHttpInterprets');
-const {mapDefault} = require('rescape-ramda');
-const {xs} = mapDefault('xs', require('xstream'));
-const {
-  VERBS: {FETCH},
-  PATCH_VERBS
-} = require('./helpers/actionHelpers');
-const {reqPathPropEq, reqPath} = require('rescape-ramda').throwing;
-const {v} = require('rescape-validate');
-const PropTypes = require('prop-types');
-const {CYCLE_API_KEY, API_CONFIG} = require('./helpers/configHelpers');
+import R from 'ramda';
+import {fetchRecordActionIntent, updateRecordActionIntent} from './cycleRecordsActionIntents';
+import {successFailureHttpIntent} from './cycleRecordsHttpIntents';
+import {fetchRecordHttpInterpret, updateRecordHttpInterpret} from './cycleRecordsHttpInterprets';
+import {mapDefault} from 'rescape-ramda';
+import xs from 'xstream';
+import {VERBS, PATCH_VERBS} from './helpers/actionHelpers';
+import {reqPathThrowingPropEq, reqPathThrowing} from 'rescape-ramda';
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
+import {CYCLE_API_KEY, API_CONFIG} from './helpers/configHelpers';
+const {FETCH} = VERBS;
 
 /**
  * Combines Redux ACTION Driver with Pouch ACTION Driver to perform CRUD operations
@@ -37,46 +35,48 @@ const {CYCLE_API_KEY, API_CONFIG} = require('./helpers/configHelpers');
  * @returns {Object} The cycle.js sink containing ACTION and POUCHDB sinks
  */
 module.exports.cycleRecords = v(({CONFIG, ACTION_CONFIG, ACTION, HTTP}) => {
-  // Input intent of user, drivers, etc into internal acts (normally called in actions in cylce.js)
+    // Input intent of user, drivers, etc into internal acts (normally called in actions in cylce.js)
 
-  // We call the following acts to distinguish them from React actions
-  // Stream of fetch record intentions
-  const fetchAct$ = fetchRecordActionIntent({ACTION_CONFIG, ACTION});
-  // Stream of update record intentions
-  const updateAct$ = updateRecordActionIntent({ACTION_CONFIG, ACTION});
+    // We call the following acts to distinguish them from React actions
+    // Stream of fetch record intentions
+    const fetchAct$ = fetchRecordActionIntent({ACTION_CONFIG, ACTION});
+    // Stream of update record intentions
+    const updateAct$ = updateRecordActionIntent({ACTION_CONFIG, ACTION});
 
-  // Results in SUCCESS or FAILURE React action sink
-  const successFailureActionSink$ = successFailureHttpIntent({ACTION_CONFIG, ACTION, HTTP});
+    // Results in SUCCESS or FAILURE React action sink
+    const successFailureActionSink$ = successFailureHttpIntent({ACTION_CONFIG, ACTION, HTTP});
 
-  // Output instructions to async drivers
-  const asyncSinks = {HTTP: R.reduce(
-    // Merge each stream
-    (accumStream$, stream$) => accumStream$ ? xs.merge(accumStream$, stream$) : stream$,
-    null,
-    // Map each act stream and its instruction function to a sink stream for async drivers like HTTP
-    R.map(([act$, interpretFunc, verbs]) =>
-      xs.combine(act$, CONFIG).map(([act, config]) => {
-        return R.cond([
-          // If the value is 'HTTP'
-          [reqPathPropEq(
-            CYCLE_API_KEY,
-            'HTTP'),
-            R.always(interpretFunc({apiConfig: reqPath(API_CONFIG, config), act}))
-          ],
-          // Anything else is disallowed right now
-          [R.T, () => {
-            throw new Error(`Unsupported driver key ${reqPath(CYCLE_API_KEY, config)}`);
-          }]
-        ])(config);
-      }),
-      // .debug(obj => `Interpreting ${R.join(', ', verbs)}`),
-      [[fetchAct$, fetchRecordHttpInterpret, [FETCH]], [updateAct$, updateRecordHttpInterpret, R.keys(PATCH_VERBS)]])
-  )};
+    // Output instructions to async drivers
+    const asyncSinks = {
+      HTTP: R.reduce(
+        // Merge each stream
+        (accumStream$, stream$) => accumStream$ ? xs.merge(accumStream$, stream$) : stream$,
+        null,
+        // Map each act stream and its instruction function to a sink stream for async drivers like HTTP
+        R.map(([act$, interpretFunc, verbs]) =>
+            xs.combine(act$, CONFIG).map(([act, config]) => {
+              return R.cond([
+                // If the value is 'HTTP'
+                [reqPathThrowingPropEq(
+                  CYCLE_API_KEY,
+                  'HTTP'),
+                  R.always(interpretFunc({apiConfig: reqPathThrowing(API_CONFIG, config), act}))
+                ],
+                // Anything else is disallowed right now
+                [R.T, () => {
+                  throw new Error(`Unsupported driver key ${reqPathThrowing(CYCLE_API_KEY, config)}`);
+                }]
+              ])(config);
+            }),
+          // .debug(obj => `Interpreting ${R.join(', ', verbs)}`),
+          [[fetchAct$, fetchRecordHttpInterpret, [FETCH]], [updateAct$, updateRecordHttpInterpret, R.keys(PATCH_VERBS)]])
+      )
+    };
 
-  return R.merge({
-    ACTION: successFailureActionSink$
-  }, asyncSinks);
-},
+    return R.merge({
+      ACTION: successFailureActionSink$
+    }, asyncSinks);
+  },
   [
     ['arg1', PropTypes.shape({
       CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,

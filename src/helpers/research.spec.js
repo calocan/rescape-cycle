@@ -1,9 +1,9 @@
-const {mockTimeSource} = require('@cycle/time');
-const xs = require('xstream').default;
+import {mockTimeSource} from '@cycle/time';
+import xs from 'xstream'
 
-const R = require('ramda');
-const Task = require('data.task');
-const {taskToPromise} = require('rescape-ramda');
+import R from 'ramda';
+import Task from 'data.task';
+import {taskToPromise} from 'rescape-ramda';
 const expectTask = task => expect(taskToPromise(task));
 
 describe('research', () => {

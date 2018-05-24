@@ -1,5 +1,5 @@
-const {mockTimeSource} = require('@cycle/time');
-const R = require('ramda');
+import {mockTimeSource} from '@cycle/time';
+import R from 'ramda';
 
 // Modified from
 // https://github.com/cyclejs-community/redux-cycles/blob/master/example/cycle/test/helpers.js

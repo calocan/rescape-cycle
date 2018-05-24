@@ -9,15 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {expectedFailedAsyncActions, expectedSuccessfulAsyncActions} = require('unittest/unittestHelpers');
-const {makeActionCreators} = require('helpers/actionCreatorHelpers');
-const {createActionsAndSampleResponses, makeTestScopedActions, makeScopeValues} = require('unittest/unittestHelpers');
-const {ACTION_CONFIGS, scopeValues, scopeKeys, sampleObjs, actionConfigs} = require('./sampleActions');
-const R = require('ramda');
-const {sampleConfig} = require('./sampleConfig');
+import {expectedFailedAsyncActions, expectedSuccessfulAsyncActions} from 'unittest/unittestHelpers';
+import {makeActionCreators} from 'helpers/actionCreatorHelpers';
+import {createActionsAndSampleResponses, makeTestScopedActions, makeScopeValues} from 'unittest/unittestHelpers';
+import {ACTION_CONFIGS, scopeValues, scopeKeys, sampleObjs, actionConfigs} from './sampleActions';
+import R from 'ramda';
+import {sampleConfig} from './sampleConfig';
 
 describe('testHelpers', () => {
-
   test('makeScopeValues', () => {
     expect(R.values(makeScopeValues(['a', 'b']))).toEqual([10, 100]);
   });

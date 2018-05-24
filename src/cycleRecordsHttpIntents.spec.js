@@ -8,16 +8,14 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRA/ACNTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {assertSourcesSinks} = require('./helpers/jestCycleHelpers');
-const {successFailureHttpIntent} = require('./cycleRecordsHttpIntents');
-const { actions, sampleCycleSources,
-  testBodies: {
-    fetchCitiesSuccessBody, fetchCitiesFailureBody
-  }
-} = require('unittest/sampleActions');
-const {cities} = require('unittest/sampleCities');
-const xs = require('xstream').default;
-const {reqPath} = require('rescape-ramda').throwing;
+import {assertSourcesSinks} from './helpers/jestCycleHelpers';
+import {successFailureHttpIntent} from './cycleRecordsHttpIntents';
+import {actions, sampleCycleSources, mockResponses} from 'unittest/sampleActions';
+import {cities} from 'unittest/sampleCities';
+import xs from 'xstream';
+import {reqPathThrowing} from 'rescape-ramda';
+
+const {fetchCitiesSuccessBody, fetchCitiesFailureBody} = mockResponses;
 
 describe('cycleRecordsIntents', () => {
   test('successFailureHttpIntent', (done) => {
@@ -34,7 +32,7 @@ describe('cycleRecordsIntents', () => {
       },
       ACTION_CONFIG: {
         // Get the ACTION_CONFIG stream
-        a: reqPath(['ACTION_CONFIG'], sampleCycleSources)
+        a: reqPathThrowing(['ACTION_CONFIG'], sampleCycleSources)
       }
     };
     const sinks = {
@@ -52,10 +50,10 @@ describe('cycleRecordsIntents', () => {
     const fakeCycle = sources => ({ACTION: successFailureHttpIntent(sources)});
     // Override the source drivers with our fake sources
     assertSourcesSinks({
-      HTTP: { 'gh|': testSources.HTTP },
-      ACTION_CONFIG: { 'a-|': testSources.ACTION_CONFIG }
+      HTTP: {'gh|': testSources.HTTP},
+      ACTION_CONFIG: {'a-|': testSources.ACTION_CONFIG}
     }, {
-      ACTION: { 'st|': sinks.ACTION }
-    }, fakeCycle, done, { interval: 200 });
+      ACTION: {'st|': sinks.ACTION}
+    }, fakeCycle, done, {interval: 200});
   });
 }, 10000);
