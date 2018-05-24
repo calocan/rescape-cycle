@@ -11,8 +11,8 @@
 
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-const middlewares = [thunk];
 import {mergeDeep} from 'rescape-ramda';
+const middlewares = [thunk];
 
 /**
  * Makes a mock store with the given state and optional sampleUserSettings. If the sampleUserSettings
@@ -21,7 +21,7 @@ import {mergeDeep} from 'rescape-ramda';
  * @param {Object} sampleUserSettings Merges in sample local settings, like those from a browser cache
  * @returns {Object} A mock redux store
  */
-module.exports.makeMockStore = (state, sampleUserSettings = {}) => {
+export const makeMockStore = (state, sampleUserSettings = {}) => {
   const mockStore = configureStore(middlewares);
   // Creates a mock store that merges the initial state with local user settings.
   return mockStore(

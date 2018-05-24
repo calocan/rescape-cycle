@@ -10,12 +10,12 @@
  */
 import R from 'ramda';
 import {apiUri} from './helpers/configHelpers';
-import { actions, actionConfigs, actionTypeLookup } from 'unittest/sampleActions';
+import {actions, actionConfigs, actionTypeLookup} from 'unittest/sampleActions';
 import {cities} from 'unittest/sampleCities';
 import {fetchRecordHttpInterpret, updateRecordHttpInterpret} from './cycleRecordsHttpInterprets';
 import {API_CONFIG} from './helpers/configHelpers';
 import {sampleConfig} from 'unittest/sampleConfig';
-import {reqPathThrowing} from 'rescape-ramda'
+import {reqPathThrowing} from 'rescape-ramda';
 
 describe('cycleRecordsHttpInterprets', () => {
   test('fetchRecordHttpInterpret', () => {
@@ -62,31 +62,31 @@ describe('cycleRecordsHttpInterprets', () => {
       act: addCitiesAct
     })).toEqual(
       R.merge({
-        // All updates go to the URI without a path
-        // The path is in the PATCH payload below, following JSON PATCH standards
-        url: apiUri(apiConfig),
-        method: 'PATCH',
-        type: addCitiesAct.type,
-        query: {
-          // Create the patch payload based on the JSON PATCH spec
-          // https://tools.ietf.org/html/rfc6902
-          // 'add', 'remove', 'replace', etc
-          op: R.toLower(addCitiesAct.verb),
-          // The path to the object to act on. Even if this is updating a relational
-          // database rather than JSON, we use this format for uniformity
-          // e.g. /users/ for an add or /users/12345/ for a replace
-          path: addCitiesAct.path,
-          // The value of the add, replace, etc
-          // This will normally be the object passed by the actionCreator caller merged
-          // with scoping values such as the user and project
-          // e.g. for an addFoo action {name: 'Foo', description: 'Foo!!!', user: 123, project: 456}
-          value: addCitiesAct.value
+          // All updates go to the URI without a path
+          // The path is in the PATCH payload below, following JSON PATCH standards
+          url: apiUri(apiConfig),
+          method: 'PATCH',
+          type: addCitiesAct.type,
+          query: {
+            // Create the patch payload based on the JSON PATCH spec
+            // https://tools.ietf.org/html/rfc6902
+            // 'add', 'remove', 'replace', etc
+            op: R.toLower(addCitiesAct.verb),
+            // The path to the object to act on. Even if this is updating a relational
+            // database rather than JSON, we use this format for uniformity
+            // e.g. /users/ for an add or /users/12345/ for a replace
+            path: addCitiesAct.path,
+            // The value of the add, replace, etc
+            // This will normally be the object passed by the actionCreator caller merged
+            // with scoping values such as the user and project
+            // e.g. for an addFoo action {name: 'Foo', description: 'Foo!!!', user: 123, project: 456}
+            value: addCitiesAct.value
+          },
+          // We process all responses in the same place for now,
+          // so use a catch-all category name
+          category: 'all'
         },
-        // We process all responses in the same place for now,
-        // so use a catch-all category name
-        category: 'all'
-      },
-      addCitiesAct.filters)
+        addCitiesAct.filters)
     );
   });
 });

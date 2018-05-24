@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  * @param {String} act.path The request path for the api
  * @returns {Object} a Complete HTTP request for the HTTP driver
  */
-module.exports.fetchRecordHttpInterpret = v(({apiConfig, act}) => (
+export const fetchRecordHttpInterpret = v(({apiConfig, act}) => (
   // Map the params to a HTTP source for the params
   {
     request: {
@@ -58,7 +58,7 @@ module.exports.fetchRecordHttpInterpret = v(({apiConfig, act}) => (
  * @param {*} act.value The value being patched
  * @returns {Object} The HTTP Driver fetch sink body
  */
-module.exports.updateRecordHttpInterpret = v(({apiConfig, act}) =>
+export const updateRecordHttpInterpret = v(({apiConfig, act}) =>
   ({
     // All updates go to the URI without a path
     // The path is in the PATCH payload below, following JSON PATCH standards

@@ -45,7 +45,7 @@ import R from 'ramda';
  * @param {Object} [timeOpts] Supplied to mockTimeSource
  * @returns {undefined}
  */
-module.exports.assertSourcesSinks = function assertSourcesSinks(sources, sinks, main, done, timeOpts = {}) {
+export const assertSourcesSinks = (sources, sinks, main, done, timeOpts = {}) => {
     // Mock a Time Source
     const timeSource = mockTimeSource(timeOpts);
     const _sources = Object.keys(sources)

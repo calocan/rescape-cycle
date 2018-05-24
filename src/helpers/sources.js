@@ -14,16 +14,15 @@
 
 import {makeHTTPDriver} from '@cycle/http';
 import {createCycleMiddleware} from 'redux-cycles';
-const cycleMiddleware = createCycleMiddleware();
+export const cycleMiddleware = createCycleMiddleware();
 const { makeActionDriver } = cycleMiddleware;
 
-module.exports.cycleMiddleware = cycleMiddleware;
 /**
  * Default cycle.js sources. These can be augmented and overridden,
  * for instance CONFIG and ACTION_CONFIG must be added to use cycleRecords.js
  * @type {{HTTP, ACTION, STATE}}
  */
-module.exports.sources = {
+export const sources = {
   HTTP: makeHTTPDriver(),
   ACTION: makeActionDriver()
 };

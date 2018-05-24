@@ -14,9 +14,9 @@ import {sampleCycleSources, sampleCycleDrivers, actions, mockResponses} from 'un
 
 import {cities} from 'unittest/sampleCities';
 import xs from 'xstream';
-import {cycleRecords} from './cycleRecords';
+import cycleRecords from './cycleRecords';
 import {reqPathThrowing} from 'rescape-ramda';
-import {run} from '@cycle/run';
+import run from '@cycle/run';
 
 const {fetchCitiesRequestBody, addCitiesRequestBody, fetchCitiesSuccessBody, addCitiesSuccessBody} = mockResponses;
 

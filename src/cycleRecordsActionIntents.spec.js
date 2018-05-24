@@ -10,10 +10,10 @@
  */
 import R from 'ramda';
 import {assertSourcesSinks} from './helpers/jestCycleHelpers';
-import { sampleCycleSources, actions, actionConfigs, actionTypeLookup} from 'unittest/sampleActions';
+import {sampleCycleSources, actions, actionConfigs, actionTypeLookup} from 'unittest/sampleActions';
 import {cities} from 'unittest/sampleCities';
-import {reqPathThrowing} from 'rescape-ramda'
-import { fetchRecordActionIntent, updateRecordActionIntent } from './cycleRecordsActionIntents';
+import {reqPathThrowing} from 'rescape-ramda';
+import {fetchRecordActionIntent, updateRecordActionIntent} from './cycleRecordsActionIntents';
 
 describe('cycleRecordsIntents', () => {
   test('fetchRecordActionIntent', (done) => {
@@ -52,11 +52,11 @@ describe('cycleRecordsIntents', () => {
     const fakeCycle = sources => ({HTTP: fetchRecordActionIntent(sources)});
     // Override the source drivers with our fake sources
     assertSourcesSinks({
-      ACTION: { 'a|': testSources.ACTION },
-      ACTION_CONFIG: { 'a|': testSources.ACTION_CONFIG }
+      ACTION: {'a|': testSources.ACTION},
+      ACTION_CONFIG: {'a|': testSources.ACTION_CONFIG}
     }, {
-      HTTP: { 's|': sinks.HTTP }
-    }, fakeCycle, done, { interval: 200 });
+      HTTP: {'s|': sinks.HTTP}
+    }, fakeCycle, done, {interval: 200});
   });
 
   test('updateRecordActionIntent', (done) => {
@@ -94,11 +94,11 @@ describe('cycleRecordsIntents', () => {
     const fakeCycle = sources => ({HTTP: updateRecordActionIntent(sources)});
     // Override the source drivers with our fake sources
     assertSourcesSinks({
-      ACTION: { 'a|': testSources.ACTION },
-      ACTION_CONFIG: { 'a|': testSources.ACTION_CONFIG }
+      ACTION: {'a|': testSources.ACTION},
+      ACTION_CONFIG: {'a|': testSources.ACTION_CONFIG}
     }, {
-      HTTP: { 's|': sinks.HTTP }
-    }, fakeCycle, done, { interval: 200 });
+      HTTP: {'s|': sinks.HTTP}
+    }, fakeCycle, done, {interval: 200});
   });
 });
 

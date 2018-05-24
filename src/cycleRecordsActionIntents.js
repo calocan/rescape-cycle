@@ -10,12 +10,13 @@
  */
 import R from 'ramda';
 import {mapDefault} from 'rescape-ramda';
-import xs from 'xstream'
-import { VERBS, PHASES, PATCH_VERBS } from './helpers/actionHelpers';
+import xs from 'xstream';
+import {VERBS, PHASES, PATCH_VERBS} from './helpers/actionHelpers';
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
-const {FETCH, ADD, REMOVE, REPLACE, SELECT, DESELECT, MOVE, COPY} = VERBS
-const {REQUEST, SUCCESS, FAILURE} = PHASES
+
+const {FETCH, ADD, REMOVE, REPLACE, SELECT, DESELECT, MOVE, COPY} = VERBS;
+const {REQUEST, SUCCESS, FAILURE} = PHASES;
 
 /**
  * Convert incoming intents to cycle actions
@@ -41,9 +42,9 @@ const actionFilter = v(({ACTION_CONFIG, ACTION}, predicates) =>
         // Respond to only this configuration
         ({action, actionConfig}) => R.allPass(predicates)(actionConfig)
       )
-      // .debug(({action, actionConfigs}) => {
-      //  console.log(`action: ${prettyFormat(action)}`);
-      // })
+  // .debug(({action, actionConfigs}) => {
+  //  console.log(`action: ${prettyFormat(action)}`);
+  // })
   , [
     ['arg1', PropTypes.shape({
       ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
@@ -59,7 +60,7 @@ const actionFilter = v(({ACTION_CONFIG, ACTION}, predicates) =>
  * @returns {Stream} Intent of record fetch, which is a mapping to a fetchAction stream,
  * which configures the fetch for the intended params
  */
-module.exports.fetchRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
+export const fetchRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
     return actionFilter({ACTION_CONFIG, ACTION}, [
       R.propEq('verb', FETCH),
       R.propEq('phase', REQUEST),
@@ -76,14 +77,14 @@ module.exports.fetchRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
         // Pass all action keys except for type
         filters: R.omit(['type'], action)
       }));
-     // .debug(act => { console.log(`Fetch records for action ${prettyFormat(act)}`) })
+    // .debug(act => { console.log(`Fetch records for action ${prettyFormat(act)}`) })
   },
-[
-  ['arg1', PropTypes.shape({
-    ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
-    ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
-  }).isRequired]
-], 'fetchRecordActionIntent');
+  [
+    ['arg1', PropTypes.shape({
+      ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+      ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
+    }).isRequired]
+  ], 'fetchRecordActionIntent');
 
 /**
  * Filter for update actions to create a stream of update actions.
@@ -92,7 +93,7 @@ module.exports.fetchRecordActionIntent = v(({ACTION_CONFIG, ACTION}) => {
  * @returns {Stream} Intent of record update, which is a mapping to an updateAction stream,
  * which configures the update for the intended params
  */
-module.exports.updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
+export const updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
     actionFilter({ACTION_CONFIG, ACTION}, [
       R.propSatisfies(verb => R.contains(verb, R.keys(PATCH_VERBS)), 'verb'),
       R.propEq('phase', REQUEST)
@@ -108,13 +109,13 @@ module.exports.updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
         // Pass all action keys except for type
         value: R.omit(['type'], action)
       }))
-      // .debug(act => console.log(`Update records intent ${prettyFormat(act)}`))
-, [
-  ['arg1', PropTypes.shape({
-    ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
-    ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
-  }).isRequired]
-], 'updateRecordActionIntent');
+  // .debug(act => console.log(`Update records intent ${prettyFormat(act)}`))
+  , [
+    ['arg1', PropTypes.shape({
+      ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+      ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
+    }).isRequired]
+  ], 'updateRecordActionIntent');
 
 /**
  * Selection intent means the intention to select something which has already been fetched
@@ -126,25 +127,25 @@ module.exports.updateRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
  * @param ACTION_CONFIG
  * @param ACTION
  */
-module.exports.selectRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
-  actionFilter({ACTION_CONFIG, ACTION}, [
-    R.propEq('verb', SELECT),
-    R.propEq('phase', REQUEST)
-  ])
+export const selectRecordActionIntent = v(({ACTION_CONFIG, ACTION}) =>
+    actionFilter({ACTION_CONFIG, ACTION}, [
+      R.propEq('verb', SELECT),
+      R.propEq('phase', REQUEST)
+    ])
     // Map to the action's params
-    .map(({action, actionConfig}) => ({
-      // Assume the model is the desired request path
-      path: `/${actionConfig.model}`,
-      // The type of patch, e.g. VERBS.REPLACE
-      verb: actionConfig.verb,
-      // Pass all action keys except for type, which we already used
-      filters: R.omit(['type'], action)
-    }))
-    // .debug(intent => console.log(`Fetch records intent ${intent}`))
-, [
-  ['arg1', PropTypes.shape({
-    ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
-    ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
-  }).isRequired]
-], 'selectRecordActionIntent');
+      .map(({action, actionConfig}) => ({
+        // Assume the model is the desired request path
+        path: `/${actionConfig.model}`,
+        // The type of patch, e.g. VERBS.REPLACE
+        verb: actionConfig.verb,
+        // Pass all action keys except for type, which we already used
+        filters: R.omit(['type'], action)
+      }))
+  // .debug(intent => console.log(`Fetch records intent ${intent}`))
+  , [
+    ['arg1', PropTypes.shape({
+      ACTION_CONFIG: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired,
+      ACTION: PropTypes.shape({addListener: PropTypes.func.isRequired}).isRequired
+    }).isRequired]
+  ], 'selectRecordActionIntent');
 

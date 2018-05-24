@@ -15,7 +15,7 @@ import {fetchRecordHttpInterpret, updateRecordHttpInterpret} from './cycleRecord
 import {mapDefault} from 'rescape-ramda';
 import xs from 'xstream';
 import {VERBS, PATCH_VERBS} from './helpers/actionHelpers';
-import {reqPathThrowingPropEq, reqPathThrowing} from 'rescape-ramda';
+import {reqPathPropEqThrowing, reqPathThrowing} from 'rescape-ramda';
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
 import {CYCLE_API_KEY, API_CONFIG} from './helpers/configHelpers';
@@ -34,7 +34,7 @@ const {FETCH} = VERBS;
  * @param {Stream} HTTP The Cycle.js HTTP driver
  * @returns {Object} The cycle.js sink containing ACTION and POUCHDB sinks
  */
-module.exports.cycleRecords = v(({CONFIG, ACTION_CONFIG, ACTION, HTTP}) => {
+export default v(({CONFIG, ACTION_CONFIG, ACTION, HTTP}) => {
     // Input intent of user, drivers, etc into internal acts (normally called in actions in cylce.js)
 
     // We call the following acts to distinguish them from React actions
@@ -57,7 +57,7 @@ module.exports.cycleRecords = v(({CONFIG, ACTION_CONFIG, ACTION, HTTP}) => {
             xs.combine(act$, CONFIG).map(([act, config]) => {
               return R.cond([
                 // If the value is 'HTTP'
-                [reqPathThrowingPropEq(
+                [reqPathPropEqThrowing(
                   CYCLE_API_KEY,
                   'HTTP'),
                   R.always(interpretFunc({apiConfig: reqPathThrowing(API_CONFIG, config), act}))

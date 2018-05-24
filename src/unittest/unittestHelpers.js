@@ -20,7 +20,7 @@ import {camelCase, capitalize, reqPathThrowing} from 'rescape-ramda';
  * @param {[String]} scopeKeys to create values for
  * @returns {Object} Keyed by scope keys and valued by the fake values
  */
-const makeScopeValues = module.exports.makeScopeValues = scopeKeys => R.fromPairs(R.addIndex(R.map)((k, i) => [k, Math.pow(10, i + 1)], scopeKeys));
+export const makeScopeValues = scopeKeys => R.fromPairs(R.addIndex(R.map)((k, i) => [k, Math.pow(10, i + 1)], scopeKeys));
 
 /**
  * Given an object of actionCreator functions and the scopeKeys expected by those actionCreators,
@@ -34,7 +34,7 @@ const makeScopeValues = module.exports.makeScopeValues = scopeKeys => R.fromPair
  * this object
  * @returns {Object} Keyed by action name and valued by an action that expects a Redux action body
  */
-const makeTestScopedActions = module.exports.makeTestScopedActions = (actionCreators, scopeValues) => {
+export const makeTestScopedActions = (actionCreators, scopeValues) => {
   return actionCreators(scopeValues);
 };
 
@@ -50,7 +50,7 @@ const makeTestScopedActions = module.exports.makeTestScopedActions = (actionCrea
  * @return {{actions: Object, responses: *}} Keyed by action name and valued by a sample response.
  * This includes three actions for each actionConfig, one for requests, success, and errors for asynchronous actions
  */
-module.exports.createActionsAndSampleResponses = (actionConfigs, actionCreators, scopeKeys, state, objs) => {
+export const createActionsAndSampleResponses = (actionConfigs, actionCreators, scopeKeys, state, objs) => {
   const scopeValues = makeScopeValues(scopeKeys);
   const actions = makeTestScopedActions(actionCreators, scopeValues);
   const responses = getMockResponses(state, actionConfigs, scopeValues, objs);
@@ -83,7 +83,7 @@ module.exports.createActionsAndSampleResponses = (actionConfigs, actionCreators,
  * {String} crud See asyncActionsGenericKeys
  * {Object} expectedBody The expected body value in the success action
  */
-module.exports.expectedSuccessfulAsyncActions = R.curry((scope, action, crud, expectedBody) => {
+export const expectedSuccessfulAsyncActions = R.curry((scope, action, crud, expectedBody) => {
   const {REQUEST: request, SUCCESS: success} = asyncActionsGenericKeys(scope, action, crud);
   return [
     {type: request},
@@ -98,7 +98,7 @@ module.exports.expectedSuccessfulAsyncActions = R.curry((scope, action, crud, ex
  * {String} crud See asyncActionsGenericKeys
  * {Object} expectedError The expected error value in the failure action
  */
-module.exports.expectedFailedAsyncActions = R.curry((scope, action, crud, expectedError) => {
+export const expectedFailedAsyncActions = R.curry((scope, action, crud, expectedError) => {
   const {REQUEST: request, FAILURE: failure} = asyncActionsGenericKeys(scope, action, crud);
   return [
     {type: request},

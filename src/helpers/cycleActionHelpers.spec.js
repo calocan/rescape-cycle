@@ -8,16 +8,22 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {streamConfigSources, overrideSources, overrideSourcesWithoutStreaming, mergeCycleSources} from './cycleActionHelpers';
-import xs from 'xstream'
+import {
+  streamConfigSources,
+  overrideSources,
+  overrideSourcesWithoutStreaming,
+  mergeCycleSources
+} from './cycleActionHelpers';
+import xs from 'xstream';
 import {makeHTTPDriver} from '@cycle/http';
 import {actionConfig} from './actionCreatorHelpers';
 import {sampleCycleSources} from 'unittest/sampleActions';
 import {VERBS, makeActionConfigLookup} from './actionHelpers';
 import {sampleConfig} from 'unittest/sampleConfig';
-import {cycleRecords} from 'cycleRecords';
+import cycleRecords from 'cycleRecords';
 import R from 'ramda';
 import {run} from '@cycle/run';
+
 const {FETCH} = VERBS;
 
 describe('cycleActionHelpers', () => {
@@ -27,11 +33,14 @@ describe('cycleActionHelpers', () => {
       // For equality testing, expose the underlying xs.of(apple) and the keys of the HTTP Driver
       (source, key) => key === 'ACTION_CONFIG' ? source() : R.keys(source),
       streamConfigSources(
-        { ACTION_CONFIG: apple,
-          HTTP: makeHTTPDriver() }
+        {
+          ACTION_CONFIG: apple,
+          HTTP: makeHTTPDriver()
+        }
       )
     )).toEqual(
-      { ACTION_CONFIG: xs.of(apple),
+      {
+        ACTION_CONFIG: xs.of(apple),
         HTTP: R.keys(makeHTTPDriver())
       }
     );
@@ -41,7 +50,7 @@ describe('cycleActionHelpers', () => {
     // Make sure our ACTION_CONFIG overrides the default and makes it a stream
     expect(
       overrideSources(
-        { ACTION_CONFIG: apple }).ACTION_CONFIG()
+        {ACTION_CONFIG: apple}).ACTION_CONFIG()
     ).toEqual(
       xs.of(apple)
     );

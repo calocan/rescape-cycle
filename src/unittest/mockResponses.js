@@ -16,10 +16,11 @@ import {makeActionCreatorsForConfig} from '../helpers/actionCreatorHelpers';
 import R from 'ramda';
 import {PropTypes} from 'prop-types';
 import {mapKeys, reqPathThrowing} from 'rescape-ramda';
-import {PHASES, VERBS} from './helpers/actionHelpers'
-const {REQUEST, SUCCESS, FAILURE} = PHASES
-const {FETCH, ADD} = VERBS
+import {PHASES, VERBS} from '../helpers/actionHelpers';
 import {v} from 'rescape-validate';
+
+const {REQUEST, SUCCESS, FAILURE} = PHASES;
+const {FETCH, ADD} = VERBS;
 
 
 /**
@@ -50,7 +51,7 @@ import {v} from 'rescape-validate';
  * }
  * @returns {Object} All test bodies as shown in the example above
  */
-const getMockResponses = module.exports.getMockResponses = v((config, actionConfigs, scopeValues, objs) =>
+export const getMockResponses = v((config, actionConfigs, scopeValues, objs) =>
     // Add 'Body' to the action name so we know this is a test request/response body
     mapKeys(
       theActionName => `${theActionName}Body`,
@@ -183,7 +184,7 @@ const sampleFailureBody = v((actionConfig, actionCreator, requestBody, objs) =>
  * @param {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample request body based on the actionConfig and objs
  */
-const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
+export const sampleFetchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
     const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
     return {
       request: {
@@ -216,7 +217,7 @@ const sampleFetchRequestBody = module.exports.sampleFetchRequestBody = v(R.curry
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample response body based on the actionConfig and objs
  */
-const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
+export const sampleFetchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
     R.merge(
       requestBody, {
         status: 200,
@@ -239,7 +240,7 @@ const sampleFetchResponseSuccess = module.exports.sampleFetchResponseSuccess = v
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample response error based on the actionConfig and objs
  */
-const sampleFetchResponseFailure = module.exports.sampleFetchResponseFailure = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
+export const sampleFetchResponseFailure = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
     R.merge(
       requestBody, {
         status: 500,
@@ -264,7 +265,7 @@ const sampleFetchResponseFailure = module.exports.sampleFetchResponseFailure = v
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample request patch body based on the actionConfig and objs
  */
-const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
+export const samplePatchRequestBody = v(R.curry((config, actionConfig, actionCreator, objs) => {
     const actionTypeLookup = asyncActionsPhaseKeysForActionConfig(actionConfig);
     return {
       // PATCH calls don't have a URL path, since the path is in the standarized
@@ -308,7 +309,7 @@ const samplePatchRequestBody = module.exports.samplePatchRequestBody = v(R.curry
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample response patch body based on the actionConfig and objs
  */
-const samplePatchResponseSuccess = module.exports.samplePatchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
+export const samplePatchResponseSuccess = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
     ({
       status: 200,
       request: requestBody,
@@ -330,7 +331,7 @@ const samplePatchResponseSuccess = module.exports.samplePatchResponseSuccess = v
  * @params {Object|Array} objs Functor representing the instances
  * @returns {Object} The sample response error based on the actionConfig and objs
  */
-const samplePatchResponseFailure = module.exports.samplePatchResponseFailure = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
+export const samplePatchResponseFailure = v(R.curry((actionConfig, actionCreator, requestBody, objs) =>
     R.merge(
       requestBody, {
         status: 500,

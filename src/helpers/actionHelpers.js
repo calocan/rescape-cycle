@@ -14,7 +14,7 @@ import {mapKeys, capitalize, camelCase} from 'rescape-ramda';
 import {v} from 'rescape-validate';
 import {PropTypes} from 'prop-types';
 
-module.exports.DRIVERS = {
+export const DRIVERS = {
   HTTP: 'HTTP'
 };
 
@@ -27,7 +27,7 @@ module.exports.DRIVERS = {
  * Examples from json-patch, which is used for testing and could be used for JSON based storage
  * https://github.com/bruth/jsonpatch-js
  */
-const VERBS = module.exports.VERBS = {
+export const VERBS = {
   // Read values
   FETCH: 'FETCH',
   // Adds an array of values to a collection or key/values to an object
@@ -93,13 +93,13 @@ const VERBS = module.exports.VERBS = {
 };
 
 // JSON PATCH verbs
-module.exports.PATCH_VERBS = R.pick(['ADD', 'REMOVE', 'REPLACE', 'SELECT', 'DESELECT', 'MOVE', 'COPY'], VERBS);
+export const PATCH_VERBS = R.pick(['ADD', 'REMOVE', 'REPLACE', 'SELECT', 'DESELECT', 'MOVE', 'COPY'], VERBS);
 
 /**
  * HTTP methods that are used.
  * @type {{GET: string, PATCH: string}}
  */
-const HTTP = {
+const HTTP_METHOD = {
   GET: 'GET',
   PATCH: 'PATCH'
 };
@@ -108,22 +108,22 @@ const HTTP = {
  * HTTP implementation of VERBS
  * @type {{FETCH}}
  */
-module.exports.HTTP = {
-  [VERBS.FETCH]: { method: HTTP.GET },
-  [VERBS.ADD]: { method: HTTP.PATCH },
-  [VERBS.REMOVE]: { method: HTTP.PATCH },
-  [VERBS.REPLACE]: { method: HTTP.PATCH },
-  [VERBS.SELECT]: { method: HTTP.PATCH },
-  [VERBS.DESELECT]: { method: HTTP.PATCH },
-  [VERBS.MOVE]: { method: HTTP.PATCH },
-  [VERBS.COPY]: { method: HTTP.PATCH },
-  [VERBS.TEST]: { method: HTTP.PATCH }
+export const HTTP = {
+  [VERBS.FETCH]: { method: HTTP_METHOD.GET },
+  [VERBS.ADD]: { method: HTTP_METHOD.PATCH },
+  [VERBS.REMOVE]: { method: HTTP_METHOD.PATCH },
+  [VERBS.REPLACE]: { method: HTTP_METHOD.PATCH },
+  [VERBS.SELECT]: { method: HTTP_METHOD.PATCH },
+  [VERBS.DESELECT]: { method: HTTP_METHOD.PATCH },
+  [VERBS.MOVE]: { method: HTTP_METHOD.PATCH },
+  [VERBS.COPY]: { method: HTTP_METHOD.PATCH },
+  [VERBS.TEST]: { method: HTTP_METHOD.PATCH }
 };
 
 /**
  * PHASES are used to construct action keys and values
  */
-const PHASES = module.exports.PHASES = {
+export const PHASES = {
   REQUEST: 'REQUEST',
   SUCCESS: 'SUCCESS',
   FAILURE: 'FAILURE'
@@ -137,7 +137,7 @@ const PHASES = module.exports.PHASES = {
  * @returns {String} the action value string:
  * `${toLower(camelCase(verb))}${capitalize(camelCase(MODEL))}${capitalize(camelCase(toLower(PHASE))}
  */
-const actionName = module.exports.actionName = v(R.curry((model, verb, phase) =>
+export const actionName = v(R.curry((model, verb, phase) =>
     `${R.toLower(camelCase(verb))}${capitalize(camelCase(model))}${capitalize(camelCase(R.toLower(phase)))}`),
 [
   ['model', [String]],
@@ -153,7 +153,7 @@ const actionName = module.exports.actionName = v(R.curry((model, verb, phase) =>
  * @param {String} phase One of 'REQUEST', 'SUCCESS', 'FAILURE'
  * @returns {String} the action value string: `${actionRoot}/${camelize(model)}/${verb}_${phase}`
  */
-const actionType = module.exports.actionType = v(R.curry((actionRoot, model, verb, phase) =>`${actionRoot}/${model}/${verb}_${phase}`),
+export const actionType = v(R.curry((actionRoot, model, verb, phase) =>`${actionRoot}/${model}/${verb}_${phase}`),
 [
   ['actionRoot', [String]],
   ['model', [String]],
@@ -174,7 +174,7 @@ const actionType = module.exports.actionType = v(R.curry((actionRoot, model, ver
  * [PHASES.ERROR]: location/cities/FETCH_ERROR
  * }
  */
-const asyncActionsPhaseKeys = module.exports.asyncActionsPhaseKeys = v(R.curry((actionRoot, model, verb) => {
+export const asyncActionsPhaseKeys = v(R.curry((actionRoot, model, verb) => {
     const actionValueMaker = actionType(actionRoot, model, verb);
     return R.compose(
         R.fromPairs,
@@ -191,7 +191,7 @@ const asyncActionsPhaseKeys = module.exports.asyncActionsPhaseKeys = v(R.curry((
  * @param {Object} actionConfigs Configuration of available actions
  * @returns {Object} An object keyed by phase (e.g. Phase.FETCH) and valued by action type
  */
-module.exports.asyncActionsPhaseKeysForActionConfig = v(actionConfig =>
+export const asyncActionsPhaseKeysForActionConfig = v(actionConfig =>
     asyncActionsPhaseKeys(actionConfig.root, actionConfig.model, actionConfig.verb)
   ,
   [
@@ -211,7 +211,7 @@ module.exports.asyncActionsPhaseKeysForActionConfig = v(actionConfig =>
  * @returns {Object} where keys are the match of the name of the actionCreator verbModel(Data|Success|Failure) and value is scope/ACTION/verb_(REQUEST|SUCCESS|FAILURE)
  * e.g. {fetchCitiesData: location/cities/FETCH_REQUEST, fetchUserSuccess: location/cities/FETCH_SUCCESS, fetchUserError: location/cities/FETCH_ERROR}
  */
-const asyncActions = module.exports.asyncActions = v(R.curry((actionRoot, model, verb) => {
+export const asyncActions = v(R.curry((actionRoot, model, verb) => {
     const keyMaker = actionName(model, verb);
     return mapKeys(phase => keyMaker(phase), asyncActionsPhaseKeys(actionRoot, model, verb));
 }), [
@@ -248,7 +248,7 @@ const asyncActions = module.exports.asyncActions = v(R.curry((actionRoot, model,
  * ...
  * }
  */
-module.exports.makeActionTypesLookup = v(actionConfigs =>
+export const makeActionTypesLookup = v(actionConfigs =>
   R.mergeAll(
     R.map(
       actionConfig => asyncActions(actionConfig.root, actionConfig.model, actionConfig.verb),
@@ -286,7 +286,7 @@ module.exports.makeActionTypesLookup = v(actionConfigs =>
  * ...
  * ]
  */
-module.exports.makeActionConfigLookup = v(actionConfigs =>
+export const makeActionConfigLookup = v(actionConfigs =>
     R.mergeAll(
       R.map(
         actionConfig =>
@@ -310,7 +310,7 @@ module.exports.makeActionConfigLookup = v(actionConfigs =>
  * @param {String} verb The phase string
  * @param {object} actionConfig The action config
  */
-module.exports.resolveActionConfig = v(R.curry((model, verb, phase, actionConfigs) =>
+export const resolveActionConfig = v(R.curry((model, verb, phase, actionConfigs) =>
     R.find(R.allPass([
       R.propEq('model', model),
       R.propEq('verb', verb),
@@ -331,7 +331,7 @@ module.exports.resolveActionConfig = v(R.curry((model, verb, phase, actionConfig
  * @param {String} actionKey The key of the action (e.g. markers)
  * @returns {String} /${scope}/${actionKey}/
  */
-const actionPath = module.exports.actionPath = R.curry((scope, actionKey) => `/${scope}/${actionKey}/`);
+export const actionPath = R.curry((scope, actionKey) => `/${scope}/${actionKey}/`);
 /**
  * Create a standard action value. Curryable
  * @param {String} scope The reducer scope (e.g. geojson)
@@ -340,7 +340,7 @@ const actionPath = module.exports.actionPath = R.curry((scope, actionKey) => `/$
  * @returns {String} /scope/actionKey/ACTION/
  * actionId:: String -> String -> String
  */
-const actionId = module.exports.actionId = R.curry((scope, actionKey, action) => `${actionPath(scope, actionKey)}${R.toUpper(action)}/`);
+export const actionId = R.curry((scope, actionKey, action) => `${actionPath(scope, actionKey)}${R.toUpper(action)}/`);
 
 /**
  * For internal use to make consistent action keys in the form CRUD_ACTION_PHASE (e.g. FETCH_USER_REQUEST)
@@ -360,43 +360,10 @@ const actionValues = R.curry((scope, action, crud, phase) =>`${scope}/${action}/
  * @returns {Object} where keys are (REQUEST|SUCCESS|FAILURE) and value is scope/ACTION/crud_(REQUEST|SUCCESS|FAILURE)
  * e.g. {REQUEST: person/user/FETCH_REQUEST, SUCCESS: person/user/FETCH_SUCCESS, ERROR: person/user/FETCH_ERROR}
  */
-const asyncActionsGenericKeys = module.exports.asyncActionsGenericKeys = R.curry((scope, action, crud = 'FETCH') => {
+export const asyncActionsGenericKeys = R.curry((scope, action, crud = 'FETCH') => {
   const actionValueMaker = actionValues(scope, action, crud);
   return R.compose(
     R.fromPairs,
     R.map(phase => R.pair(R.toUpper(phase), actionValueMaker(phase))),
   )(PHASES);
 });
-
-/**
- * Returns standard async action handler functions,
- * one to crud the data, one to handle success, one to handle failure
- * @param {String} scope The scope of the reducer
- * @param {String} action The subject of the async operation, such as a User
- * @param {String} crud Default 'FETCH'. Or can be 'UPDATE', 'REMOVE' or anything else
- * @param {Function} asyncFunc The asyncFunc to call. Must return a Task
- * @returns {Object} {
- *  CrudActionData: trivial action handler indicating crud call
- *  CrudActionSuccess: trivial action handler indicating crud success, returns object with response body in 'body'
- *  CrudActionFailure: trivial action handler indicating crud failure, returns object with exception in 'error'
- * }
- */
-const asyncActionCreators = module.exports.asyncActionCreators = R.curry((scope, action, crud) => {
-  if (typeof (action) === 'object') {
-    throw new Error();
-  }
-  const valueMaker = actionValues(scope, action, crud);
-  // Creates action values (e.g. FETCH_USER_REQUEST)
-  const {REQUEST, SUCCESS, FAILURE} = R.compose(
-    R.fromPairs,
-    R.map(phase => R.pair(phase, valueMaker(phase))),
-  )(PHASES);
-  const crudAction = phase => `${R.toLower(crud)}${capitalize(action)}${capitalize(phase)}`;
-  return {
-    // Create a CRUD action that has key and whatever params are passed in
-    [crudAction('data')]: (key, params) => R.merge({type: REQUEST, key}, params),
-    [crudAction('success')]: (body) => ({type: SUCCESS, body}),
-    [crudAction('failure')]: (error) => ({type: FAILURE, error})
-  };
-});
-

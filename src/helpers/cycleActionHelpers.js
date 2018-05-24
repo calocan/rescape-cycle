@@ -20,7 +20,7 @@ import {PropTypes} from 'prop-types';
  * @param {Object} sources Cycle.js sources
  * @returns {Object} Cycle.js sources with any configuration objects turned into streams
  */
-const streamConfigSources = module.exports.streamConfigSources = R.map(
+export const streamConfigSources = R.map(
   R.when(R.complement(R.is(Function)), source => () => xs.of(source))
 );
 
@@ -31,7 +31,7 @@ const streamConfigSources = module.exports.streamConfigSources = R.map(
  * @param {Object} sources The overrides
  * @returns {Object} Merged sources with configs turned into streams
  */
-module.exports.overrideSources = R.compose(
+export const overrideSources = R.compose(
   // Make config sources into streams
   streamConfigSources,
   // Merge config sources with overrides
@@ -44,7 +44,7 @@ module.exports.overrideSources = R.compose(
  * @param {Object} sources The overrides
  * @returns {Object} Merged sources
  */
-module.exports.overrideSourcesWithoutStreaming = R.merge(sources);
+export const overrideSourcesWithoutStreaming = R.merge(sources);
 
 /**
  * Merges cycle.js sources that have each have a different ACTION_CONFIG
@@ -55,7 +55,7 @@ module.exports.overrideSourcesWithoutStreaming = R.merge(sources);
  * @returns {Object} A merged cycle.js drivers object. Only ACTION_CONFIG is merged.
  * Other drivers are assumed identical and the right side value is taken
  */
-module.exports.mergeCycleSources = v(cycleSources => R.reduce(
+export const mergeCycleSources = v(cycleSources => R.reduce(
   // This is 2-arity. It receives the reduction and current source
   R.mergeDeepWithKey((k, l, r) => k === 'configByType' ? R.merge(l, r) : r),
   {},

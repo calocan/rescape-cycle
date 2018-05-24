@@ -12,8 +12,8 @@
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
 
-module.exports.CYCLE_API_KEY = ['settings', 'cycle', 'drivers', 'api'];
-module.exports.API_CONFIG = ['settings', 'api'];
+export const CYCLE_API_KEY = ['settings', 'cycle', 'drivers', 'api'];
+export const API_CONFIG = ['settings', 'api'];
 
 /**
  * Creates an API path
@@ -21,7 +21,7 @@ module.exports.API_CONFIG = ['settings', 'api'];
  * @param {String} host. The host string, such as localhost, 127.0.0.1, or 'foo.co'
  * @param {String} port. The port number
  */
-module.exports.apiUri = v(({protocol, host, port}) => `${protocol}://${host}:${port}`,
+export const apiUri = v(({protocol, host, port}) => `${protocol}://${host}:${port}`,
 [
   ['api', PropTypes.shape({
     protocol: PropTypes.string.isRequired,
@@ -42,7 +42,7 @@ module.exports.apiUri = v(({protocol, host, port}) => `${protocol}://${host}:${p
  * @param {Object} context The context of request, such as a user's settings
  * For example,
  * @returns {Object} The matching current object or throws
-const resolve = module.exports.resolve = v(R.curry((path, state, context) =>
+export const resolve = v(R.curry((path, state, context) =>
   // Resolve the current entry
   reqPathThrowing(
     R.concat(

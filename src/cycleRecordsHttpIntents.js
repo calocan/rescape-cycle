@@ -11,12 +11,13 @@
 import R from 'ramda';
 import {makeActionCreatorsForConfig, actionCreatorNameForPhase} from './helpers/actionCreatorHelpers';
 import {mapDefault} from 'rescape-ramda';
-import xs, {Stream} from 'xstream'
-import { PHASES } from './helpers/actionHelpers';
-import {reqPathThrowing} from 'rescape-ramda'
+import xs, {Stream} from 'xstream';
+import {PHASES} from './helpers/actionHelpers';
+import {reqPathThrowing} from 'rescape-ramda';
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
-const {SUCCESS, FAILURE} = PHASES
+
+const {SUCCESS, FAILURE} = PHASES;
 
 /**
  * Convert incoming intents to cycle actions
@@ -28,7 +29,7 @@ const {SUCCESS, FAILURE} = PHASES
  * @param HTTP
  * @return Stream The action stream of success and failures
  */
-module.exports.successFailureHttpIntent = v(({ACTION_CONFIG, HTTP}) => {
+export const successFailureHttpIntent = v(({ACTION_CONFIG, HTTP}) => {
   const response$ = HTTP.select('all').flatten();
   return xs.combine(response$, ACTION_CONFIG).map(([response, actionConfigs]) => {
     return intent(response, actionConfigs);

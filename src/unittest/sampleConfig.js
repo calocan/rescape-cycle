@@ -1,5 +1,5 @@
 // A minimum configuration for cycleRecords.js
-module.exports.sampleConfig = {
+export const sampleConfig = {
   settings: {
     cycle: {
       drivers: {

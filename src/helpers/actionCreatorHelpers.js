@@ -35,7 +35,7 @@ import PropTypes from 'prop-types';
  * @returns {Object} ret or {[ret as string]: obj} along with the type
  * creator:: s -> [<k,v] -> <k,v> -> {type: s, ...<k,v>}
  */
-const creator = module.exports.creator = v(R.curry((type, ret, scope, obj) =>
+export const creator = v(R.curry((type, ret, scope, obj) =>
   // Merge the type with one of the conditionals
   R.merge(
     { type },
@@ -88,7 +88,7 @@ const creator = module.exports.creator = v(R.curry((type, ret, scope, obj) =>
  *    ...rets[PHASES.FAILURE] // Default obj. Result of rets[PHASES.FAILURE] config
 *    })
  */
-const asyncActionCreators = module.exports.asyncActionCreators = v(R.curry((actionRoot, model, verb, rets) => {
+export const asyncActionCreators = v(R.curry((actionRoot, model, verb, rets) => {
   // Creates action type (e.g. 'location/cities/fetch_data')
   const typeMaker = actionType(actionRoot, model, verb);
   // Creates action key (e.g. 'FETCH_CITIES_REQUEST')
@@ -156,7 +156,7 @@ const ACTION_CONFIGS = [
  * ...
  * }
  */
-const makeActionCreators = module.exports.makeActionCreators = v(R.curry((actionConfigs, scope) =>
+export const makeActionCreators = v(R.curry((actionConfigs, scope) =>
   R.mergeAll(
     R.map(
       actionConfig => makeActionCreatorsForConfig(actionConfig, scope),
@@ -169,7 +169,7 @@ const makeActionCreators = module.exports.makeActionCreators = v(R.curry((action
 ], 'makeActionCreators');
 
 // Like makeActionCreators but for a single actionConfig
-const makeActionCreatorsForConfig = module.exports.makeActionCreatorsForConfig = v(R.curry((actionConfig, scope) =>
+export const makeActionCreatorsForConfig = v(R.curry((actionConfig, scope) =>
   R.map(
     // Enhance the actionCreator with the configured scope parameters
     // Pick the configured scope properties from the passed in the scope
@@ -190,7 +190,7 @@ const makeActionCreatorsForConfig = module.exports.makeActionCreatorsForConfig =
  * @param {String} phase The phase, such as PHASES.REQUEST
  * @returns {String} The action name
  */
-module.exports.actionCreatorNameForPhase = v((actionConfig, phase) =>
+export const actionCreatorNameForPhase = v((actionConfig, phase) =>
   actionName(actionConfig.model, actionConfig.verb, phase)
 , [
   ['actionConfig', PropTypes.shape({
@@ -265,7 +265,7 @@ const DEFAULT_ACTION_BODIES = {
 };
 
 // By default have all actionCreators return action bodies made by these functions
-const ACTION_BODIES = module.exports.ACTION_BODIES = R.map(R.always(DEFAULT_ACTION_BODIES), VERBS);
+export const ACTION_BODIES = R.map(R.always(DEFAULT_ACTION_BODIES), VERBS);
 
 /**
  * Creates a action config object
@@ -277,7 +277,7 @@ const ACTION_BODIES = module.exports.ACTION_BODIES = R.map(R.always(DEFAULT_ACTI
  * The current scope object will be passed to the actionCreator before the action
  * is called
  */
-const actionConfig = module.exports.actionConfig = v((root, scope, model, verb) =>
+export const actionConfig = v((root, scope, model, verb) =>
     ({root, model, verb, scope, ret: ACTION_BODIES[verb]})
   , [
     ['root', PropTypes.string.isRequired],
